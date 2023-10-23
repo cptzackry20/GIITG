@@ -1,0 +1,43 @@
+
+.edit-profile-form {
+    background-color: #f4f4f4;
+    padding: 50px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    text-align: left; /* Align form elements to the left */
+    max-width: 400px; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the form horizontally */
+}
+
+.edit-profile-form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333; /* Change label color */
+}
+
+.edit-profile-form input[type="text"],
+.edit-profile-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.edit-profile-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px; /* Add space below buttons */
+}
+
+/* Style the "Discard" button differently */
+.edit-profile-form button[type="button"] {
+    background-color: #ccc;
+    color: #333;
+    margin-left: 10px; /* Add space between buttons */
+}
