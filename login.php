@@ -33,7 +33,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizller</title>
+    <title>Login GIITG</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="style/header.css">
@@ -76,7 +76,9 @@ if (isset($_POST['submit'])) {
                 <div class="wrap-login100">
                     <div class="login100-pic js-tilt" data-tilt>
                         <img src="img/favicon.png" alt="IMG">
+                       
                     </div>
+                    
                     <div class="login100-form validate-form">
                         <span class="login100-form-title">
                             Staff Login
@@ -104,6 +106,9 @@ if (isset($_POST['submit'])) {
                                     Login
                                 </button>
                             </div>
+                            <br>
+                            <a href="signup.php" class="signup-link" style="margin-left: 55px;">Don't have an account? Sign up</a>
+
                         </form>
 
                         <!-- Display an error message if login fails -->

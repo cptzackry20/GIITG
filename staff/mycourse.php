@@ -53,6 +53,7 @@ if ($result && $result->num_rows > 0) {
     <title>My Course</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="wrapper">
     <?php include 'staffsidebar.php'; ?>

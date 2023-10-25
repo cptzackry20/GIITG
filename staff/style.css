@@ -80,6 +80,7 @@ body {
     max-width: 100%; /* Ensure images don't exceed their container width */
 }
 
+
 .course-card {
     background-color: #f4f4f4; /* Course card background color */
     padding: 20px;
@@ -96,6 +97,45 @@ body {
 
 .course-card img {
     max-width: 100%; /* Ensure images don't exceed their container width */
+}/* Style the card container */
+.card-container {
+    position: relative;
+}
+
+
+a.start-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+    font-weight: 500;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1; /* Ensure the button is above the card content */
+    background-color: #007bff;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 13px;
+    text-decoration: none;
+}
+
+
+
+
+a.start-button:hover {
+    background-color: #fff;
+    color: #007bff;
+}
+
+a.start-button:focus {
+    outline: none;
 }
 
 .wrapper .sidebar ul li a:hover,
@@ -192,6 +232,8 @@ li {
     justify-content: space-between;
 }
 
+
+
 .form-column {
     width: 48%; /* Adjust as needed */
 }
@@ -247,4 +289,103 @@ li {
 
 .spacer {
     margin-top: 70px; /* Adjust the margin as needed to create the desired space */
+}
+
+/* Additional CSS for lessontaken.php */
+
+/* Style the course content */
+.course-details {
+    background-color: #fff; /* Set the background color */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    margin: 20px 0; /* Add space around the course content */
+}
+
+.course-details h2 {
+    font-size: 24px; /* Customize the heading font size */
+    margin-bottom: 10px; /* Add space below the heading */
+}
+
+.course-details img {
+    max-width: 100%; /* Ensure images don't exceed their container width */
+    border-radius: 5px; /* Add a border radius to images */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Add a shadow to images */
+    margin-top: 10px; /* Add space above the image */
+}
+
+.course-details p {
+    font-size: 16px; /* Set the font size for text content */
+    margin-top: 10px; /* Add space above paragraphs */
+}
+
+/* Style the lessons list */
+.lessons-list {
+    list-style: none; /* Remove list bullets */
+    padding: 0; /* Remove default padding */
+}
+
+.lessons-list li {
+    margin: 10px 0; /* Add space between lessons */
+}
+
+.lessons-list a {
+    text-decoration: none; /* Remove underlines from lesson links */
+    color: #007bff; /* Set the link color */
+    font-weight: bold; /* Make links bold */
+    display: block; /* Make the entire block clickable */
+}
+
+.lessons-list a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+ /* Add your additional styles here */
+        /* Style for the video container */
+.video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+ }
+.video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+}
+
+#goToQuizButton {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+
+#goToQuizButton:hover {
+    background-color: #0056b3;
+}
+
+.start-button:hover {
+    background-color: #0056b3; /* Change color on hover */
+}
+
+/* Add this CSS for the "Finish Course" button */
+.finish-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease; /* Add a smooth background color transition */
+}
+
+.finish-button:hover {
+    background-color: #0056b3; /* Change color on hover */
 }
