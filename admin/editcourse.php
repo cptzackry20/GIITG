@@ -10,13 +10,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $courseAuthor = $_POST['course_author'];
     $courseDuration = $_POST['course_duration'];
 
-    // Check if a new image file is uploaded
+    // Get an array of selected departments
+    $selectedDepartments = $_POST['department'];
+
+    // Delete existing associations in department_courses
+    $deleteQuery = "DELETE FROM department_courses WHERE course_id = $courseId";
+    if ($conn->query($deleteQuery) === FALSE) {
+        echo "Error deleting department associations: " . $conn->error;
+        exit;
+    }
+
+    // Insert associations for selected departments
+    foreach ($selectedDepartments as $departmentId) {
+        $insertQuery = "INSERT INTO department_courses (department_id, course_id) VALUES ($departmentId, $courseId)";
+        if ($conn->query($insertQuery) === FALSE) {
+            echo "Error associating department with course: " . $conn->error;
+            exit;
+        }
+    }
+
     if (isset($_FILES['course_img']['name']) && $_FILES['course_img']['name'] != "") {
         // Define the path to store the uploaded image
         $targetDir = "img/courseimg/"; // Update with your actual image folder path
         $targetFile = $targetDir . basename($_FILES['course_img']['name']);
-        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION)); // Added parentheses here
+    
         // Check if the uploaded file is a valid image
         $check = getimagesize($_FILES['course_img']['tmp_name']);
         if ($check !== false) {
@@ -26,22 +44,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Generate a unique filename to avoid overwriting existing files
                 $newFileName = "course_" . uniqid() . "." . $imageFileType;
                 $newFilePath = $targetDir . $newFileName;
-
+    
                 // Move the uploaded image to the destination folder
                 if (move_uploaded_file($_FILES['course_img']['tmp_name'], $newFilePath)) {
                     // Update the course information in the database with the new image filename
-                    $updateQuery = "UPDATE course SET name = '$courseName', 
-                                                    `desc` = '$courseDesc', 
-                                                    author = '$courseAuthor', 
-                                                    img = '$newFilePath', 
-                                                    duration = '$courseDuration' 
+                    $updateQuery = "UPDATE course SET name = '$courseName',
+                                    `desc` = '$courseDesc',
+                                    author = '$courseAuthor',
+                                    img = '$newFilePath',
+                                    duration = '$courseDuration'
                                     WHERE id = $courseId";
-
                     if ($conn->query($updateQuery) === TRUE) {
                         echo "Course updated successfully.";
-                    } 
-                    
-                    else {
+                    } else {
                         echo "Error updating course: " . $conn->error;
                     }
                 } else {
@@ -55,15 +70,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // No new image uploaded, update course information without changing the image
-        $updateQuery = "UPDATE course SET name = '$courseName', 
-                                        `desc` = '$courseDesc', 
-                                        author = '$courseAuthor', 
-                                        duration = '$courseDuration' 
+        $updateQuery = "UPDATE course SET name = '$courseName',
+                        `desc` = '$courseDesc',
+                        author = '$courseAuthor',
+                        duration = '$courseDuration'
                         WHERE id = $courseId";
 
         if ($conn->query($updateQuery) === TRUE) {
             echo "Course updated successfully.";
-    
+
             // Redirect to dashboard.php
             header("Location: dashboard.php");
             exit(); // Make sure to exit to prevent further execution
@@ -94,6 +109,31 @@ if (isset($_GET['id'])) {
 } else {
     echo "Course ID not provided.";
     exit;
+}
+
+// Function to get associated departments
+function getAssociatedDepartments($courseId, $conn) {
+    $associatedDepartments = array();
+    $query = "SELECT department.name FROM department_courses
+              JOIN department ON department_courses.department_id = department.id
+              WHERE department_courses.course_id = $courseId";
+
+    $result = $conn->query($query);
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $associatedDepartments[] = $row;
+        }
+    }
+
+    return $associatedDepartments;
+}
+
+// Function to check if a course is associated with a department
+function isCourseAssociatedWithDepartment($courseId, $departmentId, $conn) {
+    $query = "SELECT * FROM department_courses WHERE course_id = $courseId AND department_id = $departmentId";
+    $result = $conn->query($query);
+
+    return $result && $result->num_rows > 0;
 }
 ?>
 
@@ -127,7 +167,13 @@ if (isset($_GET['id'])) {
 </head>
 <body>
 <?php include '../includes/adminnavbar.php'; ?>
-
+<div class="section web-header">
+        <div class="header-container">
+            <div class "header-content">
+                <h1>Edit Course</h1>
+            </div>
+        </div>
+    </div>
     <div class="container mt-5">
         <h2>Edit Course</h2>
 
@@ -164,10 +210,52 @@ if (isset($_GET['id'])) {
                 <input type="text" class="form-control" id="course_duration" name="course_duration" value="<?php echo $courseDuration; ?>">
             </div>
             
+            <div class="form-group">
+    <label><h2>Select Department</h2></label>
+    <?php
+    $departmentQuery = "SELECT id, name FROM department";
+    $departmentResult = $conn->query($departmentQuery);
+
+    if ($departmentResult && $departmentResult->num_rows > 0) {
+        while ($departmentRow = $departmentResult->fetch_assoc()) {
+            $departmentId = $departmentRow['id'];
+            $departmentName = $departmentRow['name'];
+
+            // Check if the course is associated with this department
+            $checked = isCourseAssociatedWithDepartment($courseId, $departmentId, $conn) ? 'checked' : '';
+
+            echo '<div class="form-check">';
+            echo '<input type="checkbox" class="form-check-input" name="department[]" value="' . $departmentId . '" ' . $checked . '>';
+            echo '<label class="form-check-label">' . $departmentName . '</label>';
+            echo '</div>';
+        }
+    }
+    ?>
+</div>
+
+
+            
             <button type="submit" class="btn btn-primary">Update Course</button>
         </form>
-    </div>
+        <br>
 
+        <?php
+        $associatedDepartments = getAssociatedDepartments($courseId, $conn);
+                
+        if (!empty($associatedDepartments)) {
+            echo "<p>Associated Departments:</p>";
+            echo "<ul>";
+            foreach ($associatedDepartments as $associatedDepartment) {
+                echo "<li>" . $associatedDepartment['name'] . "</li>";
+            }
+            echo "</ul>";
+        } else {
+            echo "This course is not associated with any departments yet.";
+        }
+        ?>
+
+    </div>
+    <br>
     <?php include '../includes/footer.php'; ?>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

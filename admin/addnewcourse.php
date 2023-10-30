@@ -12,7 +12,7 @@
         // You can add validation and sanitization here as needed
 
         // Upload and save the course image
-        $targetDirectory = "../img/courseimg/"; // Specify the target directory
+        $targetDirectory = "img/courseimg/"; // Specify the target directory
         $targetFile = $targetDirectory . basename($_FILES["course_image"]["name"]); // Get the target file path
 
         // Check if the image file is a real image

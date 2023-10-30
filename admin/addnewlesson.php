@@ -11,8 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate and sanitize form inputs
     $lessonName = htmlspecialchars($_POST['lesson_name']);
     $lessonDescription = htmlspecialchars($_POST['lesson_desc']);
-    $lessonLink = htmlspecialchars($_POST['lesson_link']);
+    $lessonLink = !empty($_POST['lesson_link']) ? htmlspecialchars($_POST['lesson_link']) : null; // Set to null if it's empty
     $courseId = $_POST['course_id'];
+
+    // Initialize $lessonLinkErr
+    $lessonLinkErr = ""; // This line was added
 
     // Check if a file was uploaded
     if (!empty($_FILES['content_file']['name'])) {
@@ -45,16 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lessonDescriptionErr = "Lesson description is required";
     }
 
-    if (empty($lessonLink)) {
-        $lessonLinkErr = "Lesson link is required";
-    }
-
     if (empty($courseId)) {
         $courseIdErr = "Course is required";
     }
 
     // Check if there are no errors
-    if (empty($lessonNameErr) && empty($lessonDescriptionErr) && empty($lessonLinkErr) && empty($courseIdErr) && empty($contentFileErr)) {
+    if (empty($lessonNameErr) && empty($lessonDescriptionErr) && empty($courseIdErr) && empty($contentFileErr)) {
         // Retrieve the course_name based on the selected course_id
         $courseQuery = "SELECT name FROM course WHERE id = ?";
         $stmt = $conn->prepare($courseQuery);
@@ -80,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Close the statement
         $stmt->close();
 
-        // Insert the new lesson into the database with the course_name, content_file, and content_type
+        // Insert the new lesson into the database
         $insertQuery = "INSERT INTO lesson (name, `desc`, link, course_id, course_name, content_file, content_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($insertQuery);
 
@@ -106,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Bind parameters
-        $stmt->bind_param("sssisss", $lessonName, $lessonDescription, $lessonLink, $courseId, $courseName, $newContentFilePath, $contentType);
+        $stmt->bind_param("sssssss", $lessonName, $lessonDescription, $lessonLink, $courseId, $courseName, $newContentFilePath, $contentType);
 
         // Check if the bind_param was successful
         if ($stmt->execute()) {
@@ -123,7 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $courseQuery = "SELECT id, name FROM course";
 $courseResult = $conn->query($courseQuery);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -181,10 +179,11 @@ $courseResult = $conn->query($courseQuery);
                 <span class="text-danger"><?php echo $lessonDescriptionErr; ?></span>
             </div>
             <div class="form-group">
-                <label for="lesson_link">Lesson Link</label>
-                <input type="text" class="form-control" id="lesson_link" name="lesson_link" required>
-                <span class="text-danger"><?php echo $lessonLinkErr; ?></span>
-            </div>
+    <label for="lesson_link">Lesson Link</label>
+    <input type="text" class="form-control" id="lesson_link" name="lesson_link">
+    
+</div>
+
             <div class="form-group">
                 <label for="content_file">Upload File</label>
                 <input type="file" class="form-control-file" id="content_file" name="content_file">

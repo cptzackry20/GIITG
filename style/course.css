@@ -261,3 +261,9 @@ nav button.navbar-toggler:active {
         max-width: 300px;
     }
 }
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Adjust the gap as needed */
+    margin-bottom: 10px; /* Add margin to separate from the table */
+}

@@ -87,9 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <title>Edit Course</title>
+    <title>Edit Lesson</title>
     <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -112,10 +112,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-</head>
 
 <body>
-<?php include '../includes/adminnavbar.php'; ?>
+    <?php include '../includes/adminnavbar.php'; ?>
 
     <div class="section web-header">
         <div class="header-container">
@@ -141,10 +140,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     required><?php echo $lessonDesc; ?></textarea>
             </div>
             <div class="form-group">
-                <label for="lesson_link">Lesson Link (External Link)</label>
-                <input type="url" class="form-control" id="lesson_link" name="lesson_link"
-                    value="<?php echo $lessonLink; ?>" required>
-            </div>
+    <label for="lesson_link">Lesson Link (External Link)</label>
+    <input type="url" class="form-control" id="lesson_link" name="lesson_link" value="<?php echo $lessonLink; ?>">
+</div>
+
             <div class="form-group">
                 <label for="course_id">Course Name</label>
                 <select class="form-control" id="course_id" name="course_id" required>
@@ -164,9 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="form-group">
-            <!-- Add this code to display the "Download Content File" button -->
-            <label for="content_file">Content File</label> <br>
-            <a href="<?php echo $contentFile; ?>" download class="btn btn-info">Download Content File</a>
+                <!-- Add this code to display the "Download Content File" button -->
+                <label for="content_file">Content File</label> <br>
+                <a href="<?php echo $contentFile; ?>" download class="btn btn-info">Download Content File</a>
             </div>
 
             <button type="submit" class="btn btn-primary">Update Lesson</button>

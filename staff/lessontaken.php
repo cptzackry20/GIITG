@@ -114,7 +114,7 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
 
                 <!-- Add your lesson details here -->
                 <h2><?= $lessonName ?></h2>
-                <p><?= $lessonDescription ?></p>
+                <?php echo htmlspecialchars_decode ($lessonDescription); ?></p>
 
                 <!-- Add your content specific to the lesson -->
                 <h2>Lesson Content</h2>

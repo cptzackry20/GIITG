@@ -31,7 +31,10 @@
                 <a class="nav-link" href="managelesson.php">Manage Lessons</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="managequiz.php">Manage quiz</a>
+                <a class="nav-link" href="managequiz.php">Manage Quiz</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="managestaff.php">Manage Staff</a>
             </li>
             <?php
             // Check if the user is logged in as an admin

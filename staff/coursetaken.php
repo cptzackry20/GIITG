@@ -49,6 +49,23 @@ if ($result && $result->num_rows > 0) {
     exit();
 }
 
+// Query to fetch the course finish status from the coursetaken table
+$courseFinishQuery = "SELECT finish FROM coursetaken WHERE staff_id = ? AND course_id = ?";
+$courseFinishStmt = $conn->prepare($courseFinishQuery);
+$courseFinishStmt->bind_param("ii", $staffID, $courseId);
+$courseFinishStmt->execute();
+$courseFinishResult = $courseFinishStmt->get_result();
+
+if ($courseFinishResult && $courseFinishResult->num_rows > 0) {
+    $courseFinishRow = $courseFinishResult->fetch_assoc();
+    $courseFinish = $courseFinishRow['finish'];
+} else {
+    // Handle the case where the course finish status is not found
+    // You can redirect to an error page or display an error message
+    echo "Course finish status not found.";
+    exit();
+}
+
 // Query to fetch the course details based on the course ID
 $query = "SELECT * FROM course WHERE id = ?";
 $stmt = $conn->prepare($query);
@@ -64,7 +81,6 @@ if ($result && $result->num_rows > 0) {
     $courseDescription = $course['desc'];
     $courseDuration = $course['duration'];
     $courseImage = $course['img'];
-    $courseFinish = $course['finish']; // Get the finish status
 } else {
     // Handle the case where the course details are not found
     // You can redirect to an error page or display an error message
@@ -79,6 +95,7 @@ $lessonsStmt->bind_param("i", $courseId);
 $lessonsStmt->execute();
 $lessonsResult = $lessonsStmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,22 +118,30 @@ $lessonsResult = $lessonsStmt->get_result();
                 </div>
             </div>
             <div class="container">
-            <h1>Course Details</h1>
-<div class="course-details">
+                <h1>Course Details</h1>
+                <div class="course-details">
     <img src="../<?= $courseImage ?>" alt="Course Image">
     <h2><?= $courseName ?></h2>
+    <br>
     <p><?= html_entity_decode($courseDescription) ?></p>
     <p>Duration: <?= $courseDuration ?></p>
+    <br>
+    <!-- Finish Course Button -->
     <?php
-if ($courseFinish == 0) {
-    echo '<button class="finish-button" onclick="finishCourse()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Finish Course</button>';
-} else {
+if ($courseFinish == 1) {
+    // Course is finished, show the "Go to Quiz" button
     echo '<button id="goToQuizButton" onclick="goToQuiz()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Go to Quiz</button>';
+} else {
+    // Course is not finished, display "Finish Course" button
+    echo '<button class="finish-button" onclick="finishCourse()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Finish Course</button>';
 }
-?>
 
+
+    ?>
+<br>
     <!-- Add content specific to the course -->
-    <h2>Table of Contents</h2>
+    <br>
+    <h2>Lesson List</h2>
     <ul class="lessons-list">
         <?php
         while ($lesson = $lessonsResult->fetch_assoc()) {
@@ -129,6 +154,7 @@ if ($courseFinish == 0) {
         ?>
     </ul>
 </div>
+
             </div>
         </div>
     </div>
@@ -140,9 +166,31 @@ if ($courseFinish == 0) {
 
         // JavaScript function to finish the course
         function finishCourse() {
-            // You can implement the logic to mark the course as finished in the database here
-            // You may use an AJAX request or PHP script to update the 'finish' status
-            alert("Course finished!");
+            // Update the database to mark the course as finished
+            // You can use an AJAX request or a PHP script to update the 'finish' status
+            // Example AJAX request:
+            var courseId = <?= $courseId ?>;
+            var staffId = <?= $staffID ?>;
+            var finishStatus = 1; // Set to 1 to mark it as finished
+            var url = 'updateFinishStatus.php'; // Replace with the actual URL
+            var params = 'course_id=' + courseId + '&staff_id=' + staffId + '&finish=' + finishStatus;
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Course finished successfully, update the button and display the "Go to Quiz" button
+                    document.getElementById('goToQuizButton').style.display = 'block';
+                    document.querySelector('.finish-button').style.display = 'none'; // Hide the "Finish Course" button
+                } else {
+                    // Handle errors
+                    alert('Failed to mark the course as finished.');
+                }
+            };
+
+            xhr.send(params);
         }
 
         // JavaScript function to go to the quiz
@@ -153,3 +201,4 @@ if ($courseFinish == 0) {
     </script>
 </body>
 </html>
+

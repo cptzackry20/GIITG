@@ -45,7 +45,7 @@ $result = $conn->query($query);
 
     <div class="section web-header">
         <div class="header-container">
-            <div class "header-content">
+            <div class="header-content">
                 <h1>Manage Quizzes</h1>
             </div>
         </div>

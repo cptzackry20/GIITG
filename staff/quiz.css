@@ -1,0 +1,62 @@
+/* quiz.css */
+
+/* Style for the entire quiz container */
+.quiz-questions {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Style for each question */
+.question {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Style for question text */
+.question h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* Style for answer choices list */
+.choices {
+    list-style: none;
+    padding: 0;
+}
+
+/* Style for each answer choice */
+.choices li {
+    margin: 10px 0;
+}
+
+/* Style for radio buttons */
+.choices input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Style for answer choice labels */
+.choices label {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Style for the Submit Quiz button */
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+/* Hover effect for answer choice labels */
+.choices label:hover {
+    text-decoration: underline;
+}
