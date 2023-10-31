@@ -33,6 +33,8 @@ $result = $conn->query($query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Manage Lessons</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
+
     <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

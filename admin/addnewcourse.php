@@ -57,6 +57,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+        <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
+
         <title>Add New Course</title>
         <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
         <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">

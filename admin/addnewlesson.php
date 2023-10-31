@@ -127,6 +127,8 @@ $courseResult = $conn->query($courseQuery);
 <head>
     <!-- Include necessary meta tags, stylesheets, and scripts -->
     <title>Add New Lesson</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
+
     <script src="https://cdn.tiny.cloud/1/a18et7yc09kx92w87yin53oj1w3djuz0ibkkvu404v0t3tea/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">

@@ -51,6 +51,7 @@ if ($result && $result->num_rows > 0) {
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Course</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <link rel="stylesheet" href="style.css">
 </head>
 

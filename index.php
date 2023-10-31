@@ -7,11 +7,11 @@ include('includes/config.php');
 <html lang="en">
 
 <head>
-<link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <title>Feedback</title>
-    <link rel="stylesheet" href="style/course.css"> <!-- Use your existing CSS -->
+    <title>Home</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
+    <link rel="stylesheet" href="style/course.css"> 
     <link rel="stylesheet" href="style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/Bootstrap/js/bootstrap.bundle.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.9/fullpage.min.css"

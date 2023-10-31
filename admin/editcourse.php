@@ -143,6 +143,9 @@ function isCourseAssociatedWithDepartment($courseId, $departmentId, $conn) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Edit Course</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
+
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -169,7 +172,7 @@ function isCourseAssociatedWithDepartment($courseId, $departmentId, $conn) {
 <?php include '../includes/adminnavbar.php'; ?>
 <div class="section web-header">
         <div class="header-container">
-            <div class "header-content">
+            <div class="header-content">
                 <h1>Edit Course</h1>
             </div>
         </div>
@@ -177,11 +180,11 @@ function isCourseAssociatedWithDepartment($courseId, $departmentId, $conn) {
     <div class="container mt-5">
         <h2>Edit Course</h2>
 
-        <!-- Display the existing course image -->
+        
         <p>Existing Course Image:</p>
         <img src="../<?php echo $courseImg; ?>" alt="Course Image" width="150">
 
-        <!-- Create the course edit form -->
+        
         <form action="" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="course_id" value="<?php echo $courseId; ?>">
             

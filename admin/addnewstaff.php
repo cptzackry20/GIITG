@@ -80,9 +80,9 @@ $departmentResult = $conn->query($departmentQuery);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Include necessary meta tags, stylesheets, and scripts -->
+  
     <title>Add New Staff</title>
-    <!-- Add any additional styles or scripts as needed -->
+    <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
 </head>
 <body>
     <?php include '../includes/adminnavbar.php'; ?>

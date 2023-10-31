@@ -1,7 +1,7 @@
 <?php
 
 include 'includes/config.php';
-
+session_start(); // Start the session
 // Function to get the image file type
 function getImageType($url)
 {
@@ -25,7 +25,7 @@ $result = $conn->query($query);
 <html lang="en">
 
 <head>
-    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
+<link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Feedback</title>

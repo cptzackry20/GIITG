@@ -1,6 +1,7 @@
 <?php
-// Include the navbar before starting the session
+// Include the necessary files (config and start session)
 include 'includes/config.php';
+session_start(); // Start the session
 
 // Function to get the image file type
 function getImageType($url)
@@ -15,13 +16,29 @@ function getImageType($url)
     return null;
 }
 
-// Check if the user is logged in and has the necessary session variables
-if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'staff') {
-    $staffDepartmentId = $_SESSION['department_id'];
+// Check if the user is logged in as staff
+if (isset($_SESSION['staff_id'])) {
+    $staffId = $_SESSION['staff_id'];
 
-    // Query to fetch courses from the database for the specific department
-    $query = "SELECT * FROM course WHERE department_id = $staffDepartmentId";
-    $result = $conn->query($query);
+    // Fetch the staff's department from the staff table
+    $departmentQuery = "SELECT department_id FROM staff WHERE id = $staffId";
+    $departmentResult = $conn->query($departmentQuery);
+
+    if ($departmentResult && $departmentResult->num_rows > 0) {
+        $departmentRow = $departmentResult->fetch_assoc();
+        $staffDepartmentId = $departmentRow['department_id'];
+
+        // Query to fetch courses based on the staff's department
+        $coursesQuery = "SELECT c.* FROM course c
+                        INNER JOIN department_courses dc ON c.id = dc.course_id
+                        WHERE dc.department_id = $staffDepartmentId";
+
+        $coursesResult = $conn->query($coursesQuery);
+    }
+} else {
+    // If the user is not logged in as staff, show all courses
+    $coursesQuery = "SELECT * FROM course";
+    $coursesResult = $conn->query($coursesQuery);
 }
 ?>
 
@@ -29,7 +46,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
 <html lang="en">
 
 <head>
-    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
+<link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Courses</title>
@@ -43,9 +60,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-<?php include 'includes/navbar.php'; ?>
-
 <body>
+    <?php include 'includes/navbar.php'; ?>
+
     <div class="section web-header">
         <div class="header-container">
             <div class="header-content">
@@ -59,24 +76,19 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
 
         <div class="row">
             <?php
-            // Check if there are any courses available for the staff member's department
-            if (isset($result) && $result->num_rows > 0) {
-                // Loop through the courses and display them
-                while ($row = $result->fetch_assoc()) {
+            if ($coursesResult && $coursesResult->num_rows > 0) {
+                while ($row = $coursesResult->fetch_assoc()) {
                     $courseId = $row['id'];
                     $courseName = $row['name'];
-                    $courseImg = $row['img']; // Retrieve the image URL from the database
+                    $courseImg = $row['img'];
 
-                    // Get the image type
                     $imageType = getImageType($courseImg);
 
-                    // Check if the image type is supported (jpeg, jpg, or png)
                     if ($imageType !== null) {
                         echo '<div class="col-lg-3 col-md-6">';
                         echo '<button type="button" data-toggle="modal" data-target="#Modal' . $courseId . '">';
                         echo '<div class="course" style="background-image: url(' . $courseImg . ');">';
                     } else {
-                        // Handle unsupported image types or show a default image
                         echo '<div class="col-lg-3 col-md-6">';
                         echo '<button type="button" data-toggle="modal" data-target="#Modal' . $courseId . '">';
                         echo '<div class="course default-image">';
@@ -90,31 +102,68 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_role']) && $_SESSION['u
             </div>
 
             <!-- Modal for course -->
-            <div class="modal fade" id="Modal<?php echo $courseId; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="Modal<?php echo $courseId; ?>" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <!-- Customize your modal content here as per your requirements -->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"><?php echo $courseName; ?></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="lesson">
+                                <?php
+                                $lessonQuery = "SELECT * FROM lesson WHERE course_id = $courseId";
+                                $lessonResult = $conn->query($lessonQuery);
+
+                                if ($lessonResult && $lessonResult->num_rows > 0) {
+                                    while ($lessonRow = $lessonResult->fetch_assoc()) {
+                                        $lessonName = $lessonRow['name'];
+                                        $lessonLink = $lessonRow['link'];
+                                ?>
+                                <p><a href="courses/<?php echo $lessonLink; ?>"><?php echo $lessonName; ?></a></p>
+                                <?php
+                                    }
+                                } else {
+                                    echo '<p>Sorry, there are no available lessons for this course right now.</p>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="staffpreviewcourse.php?course_id=<?php echo $courseId; ?>"
+                                class="btn btn-primary">Preview Course</a>
+                        </div>
                     </div>
                 </div>
             </div>
             <?php
                 }
             } else {
-                // Display a message if there are no available courses for the staff member's department
-                echo '<div class="col-lg-12 text-center">Sorry, there are no available courses for your department right now.</div>';
+                echo '<div class="col-lg-12 text-center">Sorry, there are no available courses right now.</div>';
             }
             ?>
         </div>
     </section>
 
     <?php include('includes/footer.php'); ?>
-
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.9/fullpage.min.js" integrity="sha512-Gx/C4x1qubng2MWpJIxTPuWch9O88dhFFfpIl3WlqH0jPHtCiNdYsmJBFX0q5gIzFHmwkPzzYTlZC/Q7zgbwCw==" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.9/fullpage.min.js"
+        integrity="sha512-Gx/C4x1qubng2MWpJIxTPuWch9O88dhFFfpIl3WlqH0jPHtCiNdYsmJBFX0q5gIzFHmwkPzzYTlZC/Q7zgbwCw=="
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
     <script src="https://kit.fontawesome.com/9fb210ee5d.js" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
+
 </html>
