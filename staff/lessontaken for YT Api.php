@@ -51,7 +51,7 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
     $courseName = $lesson['course_name'];
     $lessonName = $lesson['name'];
     $lessonDescription = $lesson['desc'];
-    $lessonLink = $lesson['link'];
+    $lessonLink = $lesson['link']; // Update with the YouTube video URL
     $lessonContentFile = $lesson['content_file'];
     $lessonContentType = $lesson['content_type'];
 } else {
@@ -61,6 +61,7 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,15 +76,9 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
             height: 0;
             overflow: hidden;
         }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
     </style>
+    <script src="https://www.youtube.com/iframe_api"></script> <!-- Include the YouTube Iframe API -->
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,12 +104,12 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
                 <!-- Add your video here -->
                 <h2>Lesson Video</h2>
                 <div class="video-container">
-                    <iframe src="<?= $lessonLink ?>" frameborder="0" allowfullscreen></iframe>
+                    <div id="player"></div> <!-- Container for YouTube video player -->
                 </div>
 
                 <!-- Add your lesson details here -->
                 <h2><?= $lessonName ?></h2>
-                <?php echo htmlspecialchars_decode ($lessonDescription); ?></p>
+                <?php echo htmlspecialchars_decode($lessonDescription); ?></p>
 
                 <!-- Add your content specific to the lesson -->
                 <h2>Lesson Content</h2>
@@ -136,9 +131,75 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
     </div>
     <script>
         var hamburger = document.querySelector(".hamburger");
-        hamburger.addEventListener("click", function(){
+        hamburger.addEventListener("click", function () {
             document.querySelector("body").classList.toggle("active");
-        })
+        });
+
+        
+var player;
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        videoId: 'YOUR_VIDEO_ID', // Replace with the actual video ID
+        playerVars: {
+            controls: 0,
+            disablekb: 1,
+            modestbranding: 1,
+            loop: 1,
+            autoplay: 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    event.target.playVideo();
+    // Capture the start timestamp and send it to your server
+    var startTimestamp = getCurrentTimestamp();
+    updateTimestamp('start', startTimestamp);
+}
+
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.ENDED) {
+        // Video has ended, capture the finish timestamp and send it to your server
+        var finishTimestamp = getCurrentTimestamp();
+        updateTimestamp('finish', finishTimestamp);
+        event.target.seekTo(0); // Restart the video
+    }
+}
+
+function getCurrentTimestamp() {
+    return new Date().toISOString();
+}
+
+function updateTimestamp(type, timestamp) {
+    // Send an AJAX request to your server to update the timestamp in the database
+    var courseId = <?= $courseId ?>;
+    var lessonId = <?= $lessonId ?>;
+    var staffId = <?= $staffID ?>;
+    var url = 'update_timestamp.php'; // Create a PHP script to handle the update
+    var params = 'course_id=' + courseId + '&lesson_id=' + lessonId + '&staff_id=' + staffId + '&type=' + type + '&timestamp=' + timestamp;
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Timestamp updated successfully
+        } else {
+            // Handle errors
+            console.error('Failed to update timestamp.');
+        }
+    };
+
+    xhr.send(params);
+}
     </script>
 </body>
 </html>

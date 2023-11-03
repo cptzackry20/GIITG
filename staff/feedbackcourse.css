@@ -1,0 +1,174 @@
+/* feedbackcourse.css */
+:root {
+
+    --txt-color: #f1f1f1;
+    --star-color: #211c1c;
+    --yellow: #ffeb3b;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    padding: 0 10px;
+}
+
+.wrapper .section {
+    width: calc(100% - 225px);
+    margin-left: 225px;
+    transition: all 0.5s ease;
+}
+
+
+/* Course Details Styles */
+.course-details {
+    display: flex;
+    flex-wrap: inherit;
+    flex-direction: column;
+    justify-content: space-around;
+    align-content: flex-end;
+}
+.course-details img {
+    width: 200px; /* Resize the course image */
+    height: 150px;
+    margin-right: 20px;
+    border: 1px solid #ddd;
+}
+
+.course-details h2 {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+}
+
+.course-details p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Feedback Form Styles */
+h2 {
+    font-size: 18px;
+    color: #333;
+    margin: 20px 0;
+}
+
+form {
+    margin: 20px 0;
+}
+
+label {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+textarea {
+    width: 100%; /* Make the comment field wider */
+    height: 150px; /* Increase the height */
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submit-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Sidebar Styles */
+.staff-sidebar {
+    background-color: #333;
+    color: #fff;
+}
+
+.hamburger {
+    display: none;
+}
+
+/* Media Query for Small Screens */
+@media screen and (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .section {
+        border: none;
+    }
+}
+
+.rating-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rating-label {
+    margin-right: 2rem;
+}
+
+.rating-star {
+    position: relative;
+    display: flex;
+    margin: 10px 0;
+    flex-direction: row-reverse;
+}
+
+.rating-star input {
+    position: relative;
+    width: 20px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    appearance: none;
+    overflow: visible;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.rating-star input::before {
+    content: '\eeb8';
+    position: absolute;
+    font-family: boxicons;
+    font-size: 34px;
+    position: absolute;
+    left: 4px;
+    color: var(--star-color);
+    transition: all .3s;
+}
+
+.rating-star input:nth-child(2n + 1)::before {
+    right: 4px;
+    left: initial;
+}
+
+.rating-star input:hover ~ input::before,
+.rating-star input:hover::before,
+.rating-star input:checked ~ input::before,
+.rating-star input:checked::before {
+    color: var(--yellow);
+}

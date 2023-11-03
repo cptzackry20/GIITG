@@ -43,8 +43,6 @@ if ($result && $result->num_rows > 0) {
     $coursesStmt->execute();
     $coursesResult = $coursesStmt->get_result();
 } else {
-    // Handle the case where the staff member's details are not found
-    // You can redirect to an error page or display an error message
     echo "Staff details not found.";
     exit();
 }
@@ -60,8 +58,6 @@ if ($courseFinishResult && $courseFinishResult->num_rows > 0) {
     $courseFinishRow = $courseFinishResult->fetch_assoc();
     $courseFinish = $courseFinishRow['finish'];
 } else {
-    // Handle the case where the course finish status is not found
-    // You can redirect to an error page or display an error message
     echo "Course finish status not found.";
     exit();
 }
@@ -131,74 +127,79 @@ $lessonsResult = $lessonsStmt->get_result();
 if ($courseFinish == 1) {
     // Course is finished, show the "Go to Quiz" button
     echo '<button id="goToQuizButton" onclick="goToQuiz()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Go to Quiz</button>';
+    echo '&nbsp;&nbsp;&nbsp;&nbsp;';
+    echo '<button id="goToFeedback" onclick="goToFeedback()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Give Feedback</button>';
 } else {
     // Course is not finished, display "Finish Course" button
     echo '<button class="finish-button" onclick="finishCourse()" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Finish Course</button>';
 }
 
-
-    ?>
+?>
 <br>
-    <!-- Add content specific to the course -->
-    <br>
-    <h2>Lesson List</h2>
-    <ul class="lessons-list">
-        <?php
-        while ($lesson = $lessonsResult->fetch_assoc()) {
-            echo '<li>';
-            echo '<a href="lessontaken.php?lesson_id=' . $lesson['id'] . '">';
-            echo '<h3>' . html_entity_decode($lesson['name']) . '</h3>';
-            echo '</a>';
-            echo '</li>';
-        }
-        ?>
-    </ul>
+<!-- Add content specific to the course -->
+<br>
+<h2>Lesson List</h2>
+<ul class="lessons-list">
+    <?php
+    while ($lesson = $lessonsResult->fetch_assoc()) {
+        echo '<li>';
+        echo '<a href="lessontaken.php?lesson_id=' . $lesson['id'] . '">';
+        echo '<h3>' . html_entity_decode($lesson['name']) . '</h3>';
+        echo '</a>';
+        echo '</li>';
+    }
+    ?>
+</ul>
 </div>
+</div>
+</div>
+</div>
+<script>
+var hamburger = document.querySelector(".hamburger");
+hamburger.addEventListener("click", function(){
+    document.querySelector("body").classList.toggle("active");
+});
 
-            </div>
-        </div>
-    </div>
-    <script>
-        var hamburger = document.querySelector(".hamburger");
-        hamburger.addEventListener("click", function(){
-            document.querySelector("body").classList.toggle("active");
-        });
+// JavaScript function to finish the course
+function finishCourse() {
+    // Update the database to mark the course as finished
+    // You can use an AJAX request or a PHP script to update the 'finish' status
+    // Example AJAX request:
+    var courseId = <?= $courseId ?>;
+    var staffId = <?= $staffID ?>;
+    var finishStatus = 1; // Set to 1 to mark it as finished
+    var url = 'updateFinishStatus.php'; // Replace with the actual URL
+    var params = 'course_id=' + courseId + '&staff_id=' + staffId + '&finish=' + finishStatus;
+    var xhr = new XMLHttpRequest();
 
-        // JavaScript function to finish the course
-        function finishCourse() {
-            // Update the database to mark the course as finished
-            // You can use an AJAX request or a PHP script to update the 'finish' status
-            // Example AJAX request:
-            var courseId = <?= $courseId ?>;
-            var staffId = <?= $staffID ?>;
-            var finishStatus = 1; // Set to 1 to mark it as finished
-            var url = 'updateFinishStatus.php'; // Replace with the actual URL
-            var params = 'course_id=' + courseId + '&staff_id=' + staffId + '&finish=' + finishStatus;
-            var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    // Course finished successfully, update the button and display the "Go to Quiz" button
-                    document.getElementById('goToQuizButton').style.display = 'block';
-                    document.querySelector('.finish-button').style.display = 'none'; // Hide the "Finish Course" button
-                } else {
-                    // Handle errors
-                    alert('Failed to mark the course as finished.');
-                }
-            };
-
-            xhr.send(params);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            // Course finished successfully, update the button and display the "Go to Quiz" button
+            document.getElementById('goToQuizButton').style.display = 'block';
+            document.querySelector('.finish-button').style.display = 'none'; // Hide the "Finish Course" button
+        } else {
+            // Handle errors
+            alert('Failed to mark the course as finished.');
         }
+    };
 
-        // JavaScript function to go to the quiz
-        function goToQuiz() {
-            // Redirect to the quiz page
-            window.location.href = 'quiztaken.php?course_id=<?= $courseId ?>';
-        }
-    </script>
+    xhr.send(params);
+}
+
+// JavaScript function to go to the quiz
+function goToQuiz() {
+    // Redirect to the quiz page
+    window.location.href = 'quiztaken.php?course_id=<?= $courseId ?>';
+}
+
+function goToFeedback() {
+    // Correct the link formation for the feedback page
+    window.location.href = 'feedbackcourse.php?course_id=<?= $courseId ?>';
+}
+</script>
 </body>
 </html>
 
