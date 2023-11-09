@@ -32,6 +32,10 @@ if ($result && $result->num_rows > 0) {
             <span class="icon"><i class="fas fa-desktop"></i></span>
             <span class="item">Edit Profile</span>
         </a></li>
+        <li><a href="staffchangepassword.php">
+            <span class="icon"><i class="fas fa-desktop"></i></span>
+            <span class="item">Edit Password</span>
+        </a></li>
         <li><a href="mycourse.php">
             <span class="icon"><i class="fas fa-database"></i></span>
             <span class="item">My Course</span>

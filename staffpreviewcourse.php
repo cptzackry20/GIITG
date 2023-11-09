@@ -1,8 +1,9 @@
 <?php
-// Include the navbar before starting the session
+// Include the navbar and start the session
 include 'includes/config.php';
-
+session_start(); // Start the session
 // Initialize variables
+
 $courseId = 0;
 $courseName = "";
 $courseDesc = "";

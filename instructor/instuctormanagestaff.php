@@ -1,29 +1,33 @@
 <?php
 // Include the database configuration file for staff
 include '../includes/config.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Handle delete staff request
-if (isset($_GET['delete_staff'])) {
-    $staffIdToDelete = $_GET['delete_staff'];
-    // Perform the database delete operation here
-    $deleteQuery = "DELETE FROM staff WHERE id = ?";
-    $stmt = $conn->prepare($deleteQuery);
-    $stmt->bind_param("i", $staffIdToDelete);
+// Handle change status request
+if (isset($_GET['change_status'])) {
+    $staffIdToChange = $_GET['change_status'];
+    $newStatus = $_GET['new_status'];
+
+    // Perform the database update operation here to change the status
+    $updateQuery = "UPDATE staff SET status = ? WHERE id = ?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("ii", $newStatus, $staffIdToChange);
 
     if ($stmt->execute()) {
-        // Staff member deleted successfully
-        header("Location: managestaff.php"); // Redirect to refresh the page
-        exit;
+        // Status changed successfully
+        // You may add a success message here
     } else {
         echo "Error: " . $stmt->error;
     }
 }
 
-// Query to fetch all staff members from the database, including the "status" column
-$query = "SELECT staff.id, staff.code, staff.name, staff.email, staff.position, staff.dp, department.name AS department_name, staff.status
+// Query to fetch all staff members for instructors from the database, including the "status" column
+$query = "SELECT staff.id, staff.code, staff.name, staff.email, staff.position, department.name AS department_name, staff.status
           FROM staff
           LEFT JOIN department ON staff.department_id = department.id";
 $result = $conn->query($query);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -49,42 +53,35 @@ $result = $conn->query($query);
     <div class="section web-header">
         <div class="header-container">
             <div class="header-content">
-                <h1>Manage Staff</h1>
+                <h1>Manage Staff for Instructors</h1>
             </div>
         </div>
     </div>
     <br>
-    <div class="col-md-7 text-right button-container">
-    <a href="addnewstaff.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Staff</a>
-    <a href="managedepartment.php" class="btn btn-success"><i class="fa fa-plus"></i> Manage Department</a>
-</div>
 
     <div class="container">
         <div class="row">
             <div class="col-md-5">
                 <h2>Staff List</h2>
                 <br>
-               
-
+            </div>
         </div>
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="staffTable">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>No</th>
                     <th>Code</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Position</th>
                     <th>Department</th>
                     <th>Status</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                // Check if there are any staff members available
                 if ($result && $result->num_rows > 0) {
-                    // Loop through the staff members and display them in a table
+                    $count = 1;
                     while ($row = $result->fetch_assoc()) {
                         $staffId = $row['id'];
                         $staffCode = $row['code'];
@@ -93,49 +90,51 @@ $result = $conn->query($query);
                         $staffPosition = $row['position'];
                         $departmentName = $row['department_name'];
                         $staffStatus = $row['status'];
-                        ?>
+
+                        // Display "Not Set" if status is null
+                        $statusText = ($staffStatus === null) ? 'Not Set' : ($staffStatus == 1 ? 'Active' : 'Inactive');
+?>
                         <tr>
-                            <td><?php echo $staffId; ?></td>
+                            <td><?php echo $count++; ?></td>
                             <td><?php echo $staffCode; ?></td>
                             <td><?php echo $staffName; ?></td>
                             <td><?php echo $staffEmail; ?></td>
                             <td><?php echo $staffPosition; ?></td>
                             <td><?php echo $departmentName; ?></td>
                             <td>
-    <?php
-    if ($staffStatus === '1') {
-        echo 'Active';
-    } elseif ($staffStatus === '0') {
-        echo 'Inactive';
-    } else {
-        echo 'Not Set';
-    }
-    ?>
-</td>
+                                <form action="" method="get">
+                                    <input type="hidden" name="change_status" value="<?php echo $staffId; ?>">
+                                    <select name="new_status" onchange="this.form.submit()">
+                                    <option value="null" <?php echo ($staffStatus === null) ? 'selected' : ''; ?>>Not Set</option>
 
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="editstaff.php?id=<?php echo $staffId; ?>" class="btn btn-primary mr-2">Edit</a>
-                                    <a href="?delete_staff=<?php echo $staffId; ?>"
-                                        class="btn btn-danger mr-2"
-                                        onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</a>
-                                </div>
+                                        <option value="1" <?php echo ($staffStatus == 1) ? 'selected' : ''; ?>>Active</option>
+                                        <option value="0" <?php echo ($staffStatus == 0) ? 'selected' : ''; ?>>Inactive</option>
+                                    </select>
+                                </form>
                             </td>
                         </tr>
                         <?php
                     }
                 } else {
-            // Display a message if there are no available staff members
-            echo '<tr><td colspan="7">Sorry, there are no available staff members right now.</td></tr>';
-        }
-        ?>
-    </tbody>
-</table>
-
-
-    </div>
+                    echo '<tr><td colspan="7">Sorry, there are no available staff members right now.</td></tr>';
+                }
+                ?>
+            </tbody>
+        </table>
     </div>
     <?php include('../includes/footer.php'); ?>
+    <script>
+        $(document).ready(function() {
+            $('#staffTable').DataTable({
+                "paging": true,  // Enable pagination
+                "searching": true,  // Enable search
+                "order": [[1, 'asc']],  // Default sorting by the second column (code)
+                "columnDefs": [
+                    { "orderable": false, "targets": [6] }  // Disable sorting for the "Status" column
+                ]
+            });
+        });
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
             integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -149,5 +148,4 @@ $result = $conn->query($query);
     <script src="https://kit.fontawesome.com/9fb210ee5d.js" crossorigin="anonymous"></script>
     <script src="../js/course.js"></script>
 </body>
-
 </html>

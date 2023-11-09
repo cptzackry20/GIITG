@@ -1,8 +1,5 @@
 <?php
-// Include necessary files and database connection here
-include '../includes/config.php'; // Adjust the path as needed
-
-// Start the session at the beginning
+include '../includes/config.php'; // Include the configuration file
 session_start();
 $staffID = $_SESSION['user']['id']; // Assuming you store the user's ID in the session
 
@@ -25,15 +22,12 @@ $result = $stmt->get_result();
 
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    // Replace the following placeholders with actual data from the database
     $staffCode = $row['code'];
     $staffName = $row['name'];
     $staffEmail = $row['email'];
     $staffPosition = $row['position'];
     $staffImage = $row['dp'];
 } else {
-    // Handle the case where the staff member's details are not found
-    // You can redirect to an error page or display an error message
     echo "Staff details not found.";
     exit();
 }
@@ -48,25 +42,19 @@ $courseResult = $courseStmt->get_result();
 if ($courseResult && $courseResult->num_rows > 0) {
     $course = $courseResult->fetch_assoc();
     $courseName = $course['name'];
-    // Add more course details here as needed
 } else {
     echo "Course details not found.";
     exit();
 }
 
-// Query to fetch MCQ questions from the database
 $questionsQuery = "SELECT * FROM question WHERE quiz_id = (SELECT id FROM quiz WHERE course_id = ?)";
 $questionsStmt = $conn->prepare($questionsQuery);
 $questionsStmt->bind_param("i", $courseId);
 $questionsStmt->execute();
 $questionsResult = $questionsStmt->get_result();
-
-// Calculate the total number of questions
 $totalQuestions = $questionsResult->num_rows;
 
-// Retrieve quiz result from the URL
 $quizResult = isset($_GET['result']) ? (int)$_GET['result'] : 0;
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

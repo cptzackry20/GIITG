@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
     <label for="lesson_link">Lesson Link (External Link)</label>
-    <input type="url" class="form-control" id="lesson_link" name="lesson_link" value="<?php echo $lessonLink; ?>">
+    <input type="text" class="form-control" id="lesson_link" name="lesson_link" value="<?php echo $lessonLink; ?>">
 </div>
 
             <div class="form-group">

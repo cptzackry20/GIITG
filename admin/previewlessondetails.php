@@ -98,30 +98,29 @@ if (isset($_GET['id'])) {
         <div class="header-container">
             <div class="header-content">
                 <h1>Preview Lesson</h1>
+                <div class="container-lesson">
+                <div class="text-center"> <!-- Center-align these elements -->
+                    <h2>Lesson: <?php echo $lessonName; ?></h2>
+                    <p><strong>Course: <?php echo $courseName; ?></strong></p>
+                </div>
+                <!-- Use htmlspecialchars_decode to render HTML content correctly -->
+            
+                <!-- Display the embedded video -->
+                <div class="video-container">
+                    <iframe class="video-embed" src="<?php echo $lessonLink; ?>" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <?php if (!empty($contentFile)) { ?>
+                    <h3>Lesson Content</h3>
+                    <div class="pdf-container">
+                        <iframe class="pdf-embed" src="<?php echo $contentFile; ?>" frameborder="0"></iframe>
+                    </div>
+                <?php } ?>
             </div>
         </div>
     </div>
 
-    <div class="container mt-10">
-    <br>
-    <div class="text-center"> <!-- Center-align these elements -->
-        <h2>Lesson: <?php echo $lessonName; ?></h2>
-        <p><strong>Course: <?php echo $courseName; ?></strong></p>
-    </div>
-    <!-- Use htmlspecialchars_decode to render HTML content correctly -->
-   
-    <!-- Display the embedded video -->
-    <div class="video-container">
-        <iframe class="video-embed" src="<?php echo $lessonLink; ?>" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <?php if (!empty($contentFile)) { ?>
-        <a href="<?php echo $contentFile; ?>" download class="btn btn-info download-button">Download Content File</a>
-    <?php } ?><br>
     <?php echo htmlspecialchars_decode($lessonDesc); ?>
-
-    <!-- Add a download button for the content file if available -->
-    
-</div><br>
+</div>
 
 
     <?php include '../includes/footer.php'; ?>

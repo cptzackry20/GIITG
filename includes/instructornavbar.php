@@ -15,7 +15,7 @@
 </head>
 <body>
 <nav id="web-navbar" class="navbar navbar-expand-lg navbar-dark fixed-top py-2">
-    <a class="navbar-brand" href="index.php"><img src="https://i.ibb.co/BsCvKCj/giitglogo-01.png" alt=""></a>
+    
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -35,6 +35,10 @@
             <li class="nav-item">
                 <a class="nav-link" href="managequiz.php">Manage Quiz</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="instuctormanagestaff.php">Manage Staff</a>
+            </li>
+            
             
             <?php
             // Check if the user is logged in as an admin

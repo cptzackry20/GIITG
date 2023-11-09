@@ -76,11 +76,6 @@ body {
     background-color: #f5f5f5;
 }
 
-.section {
-    display: flex;
-    flex-grow: 1;
-    padding: 20px;
-}
 
 .top_navbar {
     background: #333;

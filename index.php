@@ -63,7 +63,7 @@ include('includes/config.php');
                             <i class="fas fa-envelope fa-stack-1x white"></i>
                         </span>
                     </a>
-                    <a target="_blank" href="https://www.instagram.com/gigicoffeemy//">
+                    <a target="_blank" href="https://www.instagram.com/gigicoffeemy/">
                         <span class="fa-stack fa-lg">
                             <i class="fas fa-circle fa-stack-2x"></i>
                             <i class="fab fa-instagram fa-stack-1x white"></i>

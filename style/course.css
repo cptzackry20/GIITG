@@ -261,3 +261,24 @@ nav button.navbar-toggler:active {
         max-width: 300px;
     }
 }
+.container-lesson {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2%;
+    
+}
+
+/* Additional styles for the PDF container */
+.pdf-container {
+    position: relative;
+    padding-bottom: 100%; /* Adjust the aspect ratio as needed */
+    height: 0;
+}
+
+.pdf-embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

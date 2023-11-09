@@ -53,6 +53,7 @@ if ($courseResult && $courseResult->num_rows > 0) {
     echo "Course details not found.";
     exit();
 }
+
 // Query to fetch MCQ questions from the database
 $questionsQuery = "SELECT * FROM question WHERE quiz_id = (SELECT id FROM quiz WHERE course_id = ?)";
 $questionsStmt = $conn->prepare($questionsQuery);
@@ -82,17 +83,19 @@ if ($updateResultStmt->execute()) {
     echo "Failed to update quiz result in the database.";
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel="stylesheet" href="quiz.css"> <!-- Include your new CSS file -->
+    <link rel="stylesheet" href="mycourse.css"> <!-- Include your new CSS file -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
-    <link rel="stylesheet" href="quiz.css"> 
+    <link rel="stylesheet" href="mycourse.css"> <!-- Include your new CSS file -->
     <link rel="stylesheet" href="style.css"> 
+    
 </head>
 <body>
     <div class="wrapper">
@@ -131,9 +134,15 @@ if ($updateResultStmt->execute()) {
                         ?>
                         <input type="submit" value="Submit Quiz">
                     </form>
-                </div>
+                    </div>
             </div>
         </div>
     </div>
+    <script>
+        var hamburger = document.querySelector(".hamburger");
+        hamburger.addEventListener("click", function(){
+            document.querySelector("body").classList.toggle("active");
+        })
+    </script>
 </body>
 </html>

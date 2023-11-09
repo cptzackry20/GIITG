@@ -4,7 +4,7 @@ session_start();
 
 $staffID = $_SESSION['user']['id'];
 
-$query = "SELECT id, code, name, email, password, position, dp FROM staff WHERE id = ?";
+$query = "SELECT id, code, name, email, position, dp FROM staff WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $staffID);
 $stmt->execute();
@@ -17,7 +17,6 @@ if ($result && $result->num_rows > 0) {
     $staffImage = $row['dp'];
     $staffPosition = $row['position'];
     $staffCode = $row['code'];
-    $currentPassword = $row['password']; // Retrieve the current password
 } else {
     echo "Staff details not found.";
     exit();
@@ -50,22 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "Error uploading the file.";
         }
     }
-
-    // Handle other form fields for updating the profile here, including password
-    if (isset($_POST['staffNewPassword'])) {
-        $staffNewPassword = password_hash($_POST['staffNewPassword'], PASSWORD_DEFAULT);
-
-        $updateQuery = "UPDATE staff SET password = ? WHERE id = ?";
-        $stmt = $conn->prepare($updateQuery);
-        $stmt->bind_param("si", $staffNewPassword, $staffID);
-        if ($stmt->execute()) {
-            // Password updated successfully
-            // You can redirect or display a success message here
-        } else {
-            // Handle the database update error
-            echo "Error updating the password.";
-        }
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -79,14 +62,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="detailsstaff.css">
-
-    <style>
-        /* Style for password input when it's hidden */
-        .hidden-password {
-            display: none; /* Hide the password text by default */
-        }
-    </style>
 </head>
+<style>
+    /* Style the upload button */
+    .upload-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        text-align: center;
+    }
+
+    /* Style the upload button on hover */
+    .upload-button:hover {
+        background-color: #9bb5d1;
+    }
+</style>
+
 <body>
 <div class="wrapper">
     <?php include 'staffsidebar.php'; ?>
@@ -97,8 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
     <div class="form-container">
-        
-        
         <div class="edit-profile-form">
             <h1>Edit Profile</h1>
             <form action="saveupdateprofile.php" method="post" enctype="multipart/form-data">
@@ -106,32 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="staffName" name="staffName" value="<?php echo $staffName; ?>">
                 <label for="staffEmail">Email</label>
                 <input type="email" id="staffEmail" name="staffEmail" value="<?php echo $staffEmail; ?>">
-                
-                <label for="staffCurrentPassword">Current Password</label>
-                <span class="current-password" id="staffCurrentPassword"><?php echo $currentPassword; ?></span>
-                <div class="eye-icon" id="eye-icon-current">
-                <i class="fas fa-eye"></i>
-            </div>
-
-            <label for="staffNewPassword">New Password</label>  
-
-            <input type="password" id="staffNewPassword" name="staffNewPassword">
-            <div class="eye-icon" id="eye-icon-new">
-                
-            <i class="fas fa-eye"></i>
-            </div>
                 <label for="staffCode">Code</label>
                 <input type="text" id="staffCode" name="staffCode" value="<?php echo $staffCode; ?>">
-                
                 <label for="staffPosition">Position</label>
                 <input type="text" id="staffPosition" name="staffPosition" value="<?php echo $staffPosition; ?>">
                 
-                <label for="staffImage">Display Picture</label>
                 <img src="<?php echo $staffImage; ?>" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
                 <input type="file" id="staffImage" name="staffImage">
-
-
-
+                <!-- Add a new input field for image URL -->
+                <label for="staffImageUrl">Or image URL (or leave it empty if uploading a file)</label>
+                <input type="text" id="staffImageUrl" name="staffImageUrl">
+                <br>
                 <button type="submit" name="submit">Save</button>
                 <button type="button" id="discard-button">Discard</button>
             </form>
@@ -139,29 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    var eyeIconCurrent = document.getElementById("eye-icon-current");
-var eyeIconNew = document.getElementById("eye-icon-new");
-var currentPassword = document.getElementById("staffCurrentPassword");
-var newPasswordInput = document.getElementById("staffNewPassword");
-
-eyeIconCurrent.addEventListener("click", function () {
-    if (currentPassword.style.display === "none") {
-        currentPassword.style.display = "inline";
-    } else {
-        currentPassword.style.display = "none";
-    }
-});
-
-eyeIconNew.addEventListener("click", function () {
-    if (newPasswordInput.type === "password") {
-        newPasswordInput.type = "text";
-    } else {
-        newPasswordInput.type = "password";
-    }
-});
-
-
     var discardButton = document.getElementById("discard-button");
     discardButton.addEventListener("click", function() {
         // Reload the page to discard changes

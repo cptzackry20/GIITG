@@ -44,7 +44,6 @@ if (isset($_SESSION['staff_id'])) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">

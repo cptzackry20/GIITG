@@ -1,30 +1,38 @@
-
+/* Container styling */
 .edit-profile-form {
-    background-color: #f4f4f4;
-    padding: 50px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    text-align: left; /* Align form elements to the left */
-    max-width: 400px; /* Adjust the width as needed */
-    margin: 0 auto; /* Center the form horizontally */
+    background-color: #f9f9f9;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
 }
 
+/* Form element styling */
 .edit-profile-form label {
     display: block;
     font-weight: bold;
     margin-top: 10px;
-    color: #333; /* Change label color */
+    color: #333;
 }
 
 .edit-profile-form input[type="text"],
-.edit-profile-form input[type="email"] {
+.edit-profile-form input[type="email"],
+.edit-profile-form input[type="password"],
+.edit-profile-form input[type="file"],
+.edit-profile-form input[type="url"] {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    outline: none;
+    font-size: 14px;
 }
 
+/* Button styling */
 .edit-profile-form button {
     background-color: #007bff;
     color: #fff;
@@ -32,12 +40,95 @@
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px; /* Add space below buttons */
+    margin-top: 20px;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 /* Style the "Discard" button differently */
 .edit-profile-form button[type="button"] {
     background-color: #ccc;
     color: #333;
-    margin-left: 10px; /* Add space between buttons */
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.edit-profile-form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    background-color: #0074d9 !important;
+    color: #fff !important;
+    cursor: pointer;
+}
+.edit-profile-form .file-upload-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-profile-form .file-upload-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    margin-top: 20px;
+}
+
+.edit-profile-form .file-upload-button:hover {
+    background-color: #0056b3;
+}
+
+.edit-profile-form .file-upload-input {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+
+/* Display picture styling */
+.edit-profile-form .profile-picture {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 50%;
+    margin: 20px 0;
+    display: block;
+}
+
+/* Eye icon for password */
+.edit-profile-form .eye-icon {
+    cursor: pointer;
+}
+
+/* Responsive styles (adjust as needed) */
+@media (max-width: 768px) {
+    .edit-profile-form {
+        max-width: 100%;
+        padding: 30px;
+    }
+}
+.upload-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+/* Style the upload button on hover */
+.upload-button:hover {
+    background-color: #0056b3;
 }

@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $staffCode = htmlspecialchars($_POST['staff_code']);
     $staffName = htmlspecialchars($_POST['staff_name']);
     $staffEmail = htmlspecialchars($_POST['staff_email']);
-    $staffPassword = htmlspecialchars($_POST['staff_password']);
+    $staffPassword = $_POST['staff_password']; // Not sanitized
     $staffPosition = htmlspecialchars($_POST['staff_position']);
     $staffDepartment = htmlspecialchars($_POST['staff_department']);
     $staffStatus = htmlspecialchars($_POST['staff_status']);
@@ -48,6 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if there are no errors
     if (empty($staffCodeErr) && empty($staffNameErr) && empty($staffEmailErr) && empty($staffPasswordErr) && empty($staffPositionErr) && empty($staffDepartmentErr) && empty($staffStatusErr)) {
+        // Hash the password before saving it to the database
+        $hashedPassword = password_hash($staffPassword, PASSWORD_DEFAULT);
+
         // Insert the new staff member into the database
         $insertQuery = "INSERT INTO staff (code, name, email, password, position, department_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($insertQuery);
@@ -59,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Bind parameters
-        $stmt->bind_param("ssssiss", $staffCode, $staffName, $staffEmail, $staffPassword, $staffPosition, $staffDepartment, $staffStatus);
+        $stmt->bind_param("ssssiss", $staffCode, $staffName, $staffEmail, $hashedPassword, $staffPosition, $staffDepartment, $staffStatus);
 
         // Check if the bind_param was successful
         if ($stmt->execute()) {
@@ -80,7 +83,6 @@ $departmentResult = $conn->query($departmentQuery);
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
     <title>Add New Staff</title>
     <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
 </head>
