@@ -1,3 +1,35 @@
+<?php
+// Start the session (if not started)
+session_start();
+
+if (isset($_SESSION['user'])) {
+    $username = $_SESSION['staff_name'];
+    $loggedIn = true;
+} else {
+    $loggedIn = false;
+
+    // After successfully retrieving user data from the database
+    if ($result && $result->num_rows > 0) {
+        $userData = $result->fetch_assoc();
+
+        // Set the session variable based on user type
+        if ($userData['user_type'] == 1) {
+            // Normal staff
+            $_SESSION['staff'] = $userData;
+        } elseif ($userData['user_type'] == 2) {
+            // Instructor
+            $_SESSION['instructor'] = $userData;
+        } elseif ($userData['user_type'] == 3) {
+            // Admin
+            $_SESSION['admin'] = $userData;
+        }
+
+        // ... (rest of your login code)
+    }
+}
+
+// Now, in your navigation code, you can check the existence of these session variables
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,40 +54,46 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="dashboard.php">Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="managecourse.php">Manage Courses</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="managelesson.php">Manage Lessons</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="managequiz.php">Manage Quiz</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="instuctormanagestaff.php">Manage Staff</a>
-            </li>
-            
-            
-            <?php
-            // Check if the user is logged in as an admin
-            if (isset($_SESSION['admin'])) {
-                echo '<li class="nav-item dropdown">';
-                echo '<a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-                echo 'Hello, ' . $_SESSION['admin']['username'];
-                echo '</a>';
-                echo '<div class="dropdown-menu" aria-labelledby="adminDropdown">';
-                echo '<a class="dropdown-item" href="adminprofile.php">Admin Profile</a>';
-                echo '<div class="dropdown-divider"></div>';
-                echo '<a class="dropdown-item" href="adminlogout.php">Logout</a>';
-                echo '</div>';
-                echo '</li>';
-            }
-            ?>
-        </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+            <a class="nav-link" href="dashboard.php">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="managecourse.php">Manage Courses</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="managelesson.php">Manage Lessons</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="managequiz.php">Manage Quiz</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="instuctormanagestaff.php">Manage Staff</a>
+        </li>
+
+        <?php
+        if (isset($_SESSION['admin'])) {
+            echo '<li class="nav-item dropdown">';
+            echo '<a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+            echo 'Hello, ' . $_SESSION['admin']['username'];
+            echo '</a>';
+            echo '<div class="dropdown-menu" aria-labelledby="adminDropdown">';
+            echo '<a class="dropdown-item" href="adminprofile.php">Admin Profile</a>';
+            echo '<div class="dropdown-divider"></div>';
+            echo '<a class="dropdown-item" href="../logout.php">Logout</a>'; // Using the same logout for admin and instructor
+            echo '</div>';
+            echo '</li>';
+        } elseif (isset($_SESSION['instructor'])) {
+            echo '<li class="nav-item">';
+            echo '<a class="nav-link" href="../logout.php">Logout</a>';
+            echo '</li>';
+        }
+        ?>
+
+        <li class="nav-item">
+            <a class="nav-link" href="../index.php">Homepage</a>
+        </li>
+    </ul>
     </div>
 </nav>
 <script>

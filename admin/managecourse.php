@@ -54,56 +54,58 @@ $result = $conn->query($query);
     </div>
     <br>
     <div class="container">
-        <div class="row">
-            <div class="col-md-5">
-                <h2>Courses List</h2>
-                <br>
-            </div>
-            <div class="col-md-7 text-right">
-                <a href="addnewcourse.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Course</a>
-            </div>
+    <div class="row">
+        <div class="col-md-5">
+            <h2>Courses List</h2>
+            <br>
         </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Check if there are any courses available
-                if ($result && $result->num_rows > 0) {
-                    // Loop through the courses and display them in a table
-                    while ($row = $result->fetch_assoc()) {
-                        $courseId = $row['id'];
-                        $courseName = $row['name'];
-                        $courseDescription = $row['desc'];
-                        ?>
-                        <tr>
-                            <td><?php echo $courseId; ?></td>
-                            <td><?php echo $courseName; ?></td>
-                            <td><?php echo $courseDescription; ?></td>
-                            <td>
-                            <div class="btn-group" role="group">
-    <a href="editcourse.php?id=<?php echo $courseId; ?>" class="btn btn-primary mr-2">Edit</a>
-    <a href="?delete_course=<?php echo $courseId; ?>" class="btn btn-danger mr-2" onclick="return confirm('Are you sure you want to delete this course?')">Delete</a>
-    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#lessonPreviewModal" data-lessonid="<?php echo $lessonId; ?>">Preview</a>
-</div>
-                            </td>
-                        </tr>
-                        <?php
-                    }
-                } else {
-                    // Display a message if there are no available courses
-                    echo '<tr><td colspan="4">Sorry, there are no available courses right now.</td></tr>';
-                }
-                ?>
-            </tbody>
-        </table>
+        <div class="col-md-7 text-right">
+            <a href="addnewcourse.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Course</a>
+        </div>
     </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            // Check if there are any courses available
+            if ($result && $result->num_rows > 0) {
+                $counter = 1; // Initialize the counter
+                // Loop through the courses and display them in a table
+                while ($row = $result->fetch_assoc()) {
+                    $courseId = $row['id'];
+                    $courseName = $row['name'];
+                    $courseDescription = $row['desc'];
+                    ?>
+                    <tr>
+                        <td><?php echo $counter; ?></td>
+                        <td><?php echo $courseName; ?></td>
+                        <td><?php echo $courseDescription; ?></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="editcourse.php?id=<?php echo $courseId; ?>" class="btn btn-primary mr-2">Edit</a>
+                                <a href="?delete_course=<?php echo $courseId; ?>" class="btn btn-danger mr-2" onclick="return confirm('Are you sure you want to delete this course?')">Delete</a>
+                                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#lessonPreviewModal" data-lessonid="<?php echo $lessonId; ?>">Preview</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php
+                    $counter++; // Increment the counter
+                }
+            } else {
+                // Display a message if there are no available courses
+                echo '<tr><td colspan="4">Sorry, there are no available courses right now.</td></tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
 
     
     <?php include('../includes/footer.php'); ?>

@@ -3,8 +3,8 @@
 include '../includes/config.php';
 
 // Initialize variables
-$staffCode = $staffName = $staffEmail = $staffPassword = $staffPosition = $staffDepartment = $staffStatus = "";
-$staffCodeErr = $staffNameErr = $staffEmailErr = $staffPasswordErr = $staffPositionErr = $staffDepartmentErr = $staffStatusErr = "";
+$staffCode = $staffName = $staffEmail = $staffPassword = $staffPosition = $staffDepartment = $staffStatus = $staffType = "";
+$staffCodeErr = $staffNameErr = $staffEmailErr = $staffPasswordErr = $staffPositionErr = $staffDepartmentErr = $staffStatusErr = $staffTypeErr = "";
 
 // Handle the form submission to add a new staff member
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $staffPosition = htmlspecialchars($_POST['staff_position']);
     $staffDepartment = htmlspecialchars($_POST['staff_department']);
     $staffStatus = htmlspecialchars($_POST['staff_status']);
+    $staffType = htmlspecialchars($_POST['staff_type']);
 
     // Validate form inputs (you can add more specific validation rules)
     if (empty($staffCode)) {
@@ -46,13 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $staffStatusErr = "Staff status is required";
     }
 
+    if (empty($staffType)) {
+        $staffTypeErr = "Staff type is required";
+    }
+
     // Check if there are no errors
-    if (empty($staffCodeErr) && empty($staffNameErr) && empty($staffEmailErr) && empty($staffPasswordErr) && empty($staffPositionErr) && empty($staffDepartmentErr) && empty($staffStatusErr)) {
+    if (empty($staffCodeErr) && empty($staffNameErr) && empty($staffEmailErr) && empty($staffPasswordErr) && empty($staffPositionErr) && empty($staffDepartmentErr) && empty($staffStatusErr) && empty($staffTypeErr)) {
         // Hash the password before saving it to the database
         $hashedPassword = password_hash($staffPassword, PASSWORD_DEFAULT);
 
         // Insert the new staff member into the database
-        $insertQuery = "INSERT INTO staff (code, name, email, password, position, department_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO staff (code, name, email, password, position, dp, department_id, status, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($insertQuery);
 
         // Check if the prepare statement was successful
@@ -62,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Bind parameters
-        $stmt->bind_param("ssssiss", $staffCode, $staffName, $staffEmail, $hashedPassword, $staffPosition, $staffDepartment, $staffStatus);
+        $stmt->bind_param("ssssssisi", $staffCode, $staffName, $staffEmail, $hashedPassword, $staffPosition, $dpPath, $staffDepartment, $staffStatus, $staffType);
 
         // Check if the bind_param was successful
         if ($stmt->execute()) {
@@ -82,10 +87,12 @@ $departmentResult = $conn->query($departmentQuery);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Add New Staff</title>
     <link rel="shortcut icon" href="https://i.ibb.co/F8pCvb0/logo.png">
 </head>
+
 <body>
     <?php include '../includes/adminnavbar.php'; ?>
 
@@ -144,8 +151,36 @@ $departmentResult = $conn->query($departmentQuery);
             </div>
             <div class="form-group">
                 <label for="staff_status">Staff Status</label>
-                <input type="text" class="form-control" id="staff_status" name="staff_status" required>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="staff_status" id="active" value="1" checked>
+                    <label class="form-check-label" for="active">
+                        Active
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="staff_status" id="inactive" value="0">
+                    <label class="form-check-label" for="inactive">
+                        Inactive
+                    </label>
+                </div>
                 <span class="text-danger"><?php echo $staffStatusErr; ?></span>
+            </div>
+            <!-- Add form field for staff type -->
+            <div class="form-group">
+                <label for="staff_type">Staff Type</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="staff_type" id="userType1" value="1" checked>
+                    <label class="form-check-label" for="userType1">Normal Staff</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="staff_type" id="userType2" value="2">
+                    <label class="form-check-label" for="userType2">Instructor</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="staff_type" id="userType3" value="3">
+                    <label class="form-check-label" for="userType3">Admin</label>
+                </div>
+                <span class="text-danger"><?php echo $staffTypeErr; ?></span>
             </div>
             <button type="submit" class="btn btn-primary">Add Staff</button>
         </form>
@@ -154,4 +189,5 @@ $departmentResult = $conn->query($departmentQuery);
 
     <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>

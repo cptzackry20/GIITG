@@ -1,10 +1,30 @@
 <?php
-require_once '../includes/config.php'; // Include the configuration file
-session_start();
+// Include the configuration file and start the session (if not already included/started)
+require_once '../includes/config.php';
 
+if (isset($_SESSION['user'])) {
+    $userData = $_SESSION['user'];
+} else {
+    // Redirect to login if not logged in
+    header("Location: login.php");
+    exit;
+}
+
+function getUserTypeString($userType) {
+    switch ($userType) {
+        case 1:
+            return 'Staff';
+        case 2:
+            return 'Instructor';
+        case 3:
+            return 'Admin';
+        default:
+            return 'Unknown';
+    }
+}
 $staffID = $_SESSION['user']['id'];
 
-$query = "SELECT id, code, name, email, position, dp FROM staff WHERE id = ?";
+$query = "SELECT id, code, name, email, password, position, dp, user_type FROM staff WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $staffID);
 $stmt->execute();
@@ -17,120 +37,131 @@ if ($result && $result->num_rows > 0) {
     $staffImage = $row['dp'];
     $staffPosition = $row['position'];
     $staffCode = $row['code'];
+    $userType = $row['user_type']; // Get the user type from the result set
+
+    // Determine the user type and set variables accordingly
+    $userTypeText = '';
+    $dashboardLink = '';
+
+    if ($userType == 1) {
+        $userTypeText = 'Staff';
+    } elseif ($userType == 2) {
+        $userTypeText = 'Instructor';
+        $dashboardLink = '../instructor/dashboard.php';
+    } elseif ($userType == 3) {
+        $userTypeText = 'Admin';
+        $dashboardLink = '../admin/dashboard.php';
+    }
+
+    // Now, let's fetch the courses enrolled by the staff member
+    $coursesQuery = "SELECT course.* FROM coursetaken
+                     INNER JOIN course ON coursetaken.course_id = course.id
+                     WHERE coursetaken.staff_id = ?";
+
+    $coursesStmt = $conn->prepare($coursesQuery);
+    $coursesStmt->bind_param("i", $staffID);
+    $coursesStmt->execute();
+    $coursesResult = $coursesStmt->get_result();
+
+    $courseCount = 0; // Initialize the course count to 0
+    $completedCourseCount = 0; // Initialize the count of completed courses to 0
+
+    if ($coursesResult && $coursesResult->num_rows > 0) {
+        $courseCount = $coursesResult->num_rows; // Get the count of courses
+
+        while ($courseRow = $coursesResult->fetch_assoc()) {
+            // Check the status of each course
+            $coursesQuery = "SELECT course.*, coursetaken.status FROM coursetaken
+            INNER JOIN course ON coursetaken.course_id = course.id
+            WHERE coursetaken.staff_id = ?";
+
+            $completedCourseCount++;
+        }
+    }
+
 } else {
     echo "Staff details not found.";
     exit();
 }
-
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle form submission here
-    // For example, handle the uploaded image and update the database
-    if (isset($_FILES['staffImage'])) {
-        $uploadDir = 'path_to_upload_folder/'; // Specify the folder to upload the images
-        $uploadFile = $uploadDir . basename($_FILES['staffImage']['name']);
-
-        if (move_uploaded_file($_FILES['staffImage']['tmp_name'], $uploadFile)) {
-            // Update the 'dp' field in the database with the new image path
-            $updateQuery = "UPDATE staff SET dp = ? WHERE id = ?";
-            $stmt = $conn->prepare($updateQuery);
-            $stmt->bind_param("si", $uploadFile, $staffID);
-            if ($stmt->execute()) {
-                // Image uploaded and database updated successfully
-                // Redirect to the profile page or display a success message
-                header("Location: detailsstaff.php");
-                exit();
-            } else {
-                // Handle the database update error
-                echo "Error updating the database.";
-            }
-        } else {
-            // Handle the file upload error
-            echo "Error uploading the file.";
-        }
-    }
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff's Profile</title>
-    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="detailsstaff.css">
-</head>
-<style>
-    /* Style the upload button */
-    .upload-button {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-        text-align: center;
-    }
 
-    /* Style the upload button on hover */
-    .upload-button:hover {
-        background-color: #9bb5d1;
-    }
-</style>
+<head>
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <title>Profile Details</title>
+    <link rel="stylesheet" href="../style/showstaff.css">
+    <link rel="stylesheet" href="../style/Bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../style/Bootstrap/js/bootstrap.bundle.min.js">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.9/fullpage.min.css"
+          integrity="sha512-8M8By+q+SldLyFJbybaHoAPD6g07xyOcscIOQEypDzBS+sTde5d6mlK2ANIZPnSyxZUqJfCNuaIvjBUi8/RS0w=="
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/js/bootstrap.min.js"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59Aa8SWtI3F2VKkg8j7+8CIM"
+        crossorigin="anonymous"></script>
+
+</head>
 
 <body>
-<div class="wrapper">
-    <?php include 'staffsidebar.php'; ?>
-    <div class="section">
-            <div class="top_navbar">
-                <div class="hamburger">
-                    <a href="#"><i class="fas fa-bars"></i></a>
+<?php include '../includes/navbar2.php'; ?>
+
+<div class="section web-header">
+    <div class="header-container">
+        <div class="header-content">
+            <h1>Profile</h1>
+            <div class="staff-details">
+                <div style="text-align: center;">
+                    <p><?php echo $userTypeText; ?></p>
+                    <?php if (!empty($dashboardLink)): ?>
+                        <a href="<?php echo $dashboardLink; ?>">Dashboard</a>
+                    <?php endif; ?>
+                </div>
+                <img src="<?php echo $staffImage; ?>" alt="Profile Picture" style="border-radius: 50%;">
+                <p>Full Name: <?php echo $staffName; ?></p>
+                <p>Email: <?php echo $staffEmail; ?></p>
+                <p>Position: <?php echo $staffPosition; ?></p>
+                <p>Code: <?php echo $staffCode; ?></p>
+
+                <div class="buttons">
+                    <a href="mycourse.php">
+                        <button class="btn btn-outline-primary px-4">Course Taken: <?php echo $courseCount; ?></button>
+                    </a>
+                    <button class="btn btn-primary px-4 ms-3">Course Completed: <?php echo $completedCourseCount; ?></button>
+                </div>
+                <div class="profile-buttons">
+                    <a href="editstaff.php">
+                        <button class="btn btn-outline-secondary px-4">Edit Profile</button>
+                    </a>
                 </div>
             </div>
-    <div class="form-container">
-        <div class="edit-profile-form">
-            <h1>Edit Profile</h1>
-            <form action="saveupdateprofile.php" method="post" enctype="multipart/form-data">
-                <label for="staffName">Full Name</label>
-                <input type="text" id="staffName" name="staffName" value="<?php echo $staffName; ?>">
-                <label for="staffEmail">Email</label>
-                <input type="email" id="staffEmail" name="staffEmail" value="<?php echo $staffEmail; ?>">
-                <label for="staffCode">Code</label>
-                <input type="text" id="staffCode" name="staffCode" value="<?php echo $staffCode; ?>">
-                <label for="staffPosition">Position</label>
-                <input type="text" id="staffPosition" name="staffPosition" value="<?php echo $staffPosition; ?>">
-                
-                <img src="<?php echo $staffImage; ?>" alt="Profile Picture" style="max-width: 100px; max-height: 100px;">
-                <input type="file" id="staffImage" name="staffImage">
-                <!-- Add a new input field for image URL -->
-                <label for="staffImageUrl">Or image URL (or leave it empty if uploading a file)</label>
-                <input type="text" id="staffImageUrl" name="staffImageUrl">
-                <br>
-                <button type="submit" name="submit">Save</button>
-                <button type="button" id="discard-button">Discard</button>
-            </form>
         </div>
     </div>
 </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    var discardButton = document.getElementById("discard-button");
-    discardButton.addEventListener("click", function() {
-        // Reload the page to discard changes
-        location.reload();
-    });
+<?php include('../includes/footer.php'); ?>
 
-    var hamburger = document.querySelector(".hamburger");
-    hamburger.addEventListener("click", function(){
-        document.querySelector("body").classList.toggle("active");
-    });
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.0.9/fullpage.min.js"
+        integrity="sha512-Gx/C4x1qubng2MWpJIxTPuWch9O88dhFFfpIl3WlqH0jPHtCiNdYsmJBFX0q5gIzFHmwkPzzYTlZC/Q7zgbwCw=="
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/9fb210ee5d.js" crossorigin="anonymous"></script>
+<script src="../js/script.js"></script>
 </body>
+
 </html>

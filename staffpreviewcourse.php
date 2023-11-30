@@ -1,9 +1,9 @@
 <?php
-// Include the navbar and start the session
+// Include the navbar before starting the session
 include 'includes/config.php';
-session_start(); // Start the session
-// Initialize variables
+session_start();
 
+// Initialize variables
 $courseId = 0;
 $courseName = "";
 $courseDesc = "";
@@ -100,7 +100,7 @@ if (isset($_GET['course_id'])) {
         <?php foreach ($lessons as $lesson) { ?>
             <li>
                 <strong><?php echo $lesson['name']; ?>:</strong>
-                <a href="courses/<?php echo $lesson['link']; ?>" target="_blank">Watch Lesson</a>
+                <a href="lesson_preview.php?lesson_id=<?php echo $lesson['id']; ?>" target="_blank">Watch Lesson</a>
             </li>
         <?php } ?>
     </ul>

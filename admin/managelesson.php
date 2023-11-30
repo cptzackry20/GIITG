@@ -59,57 +59,56 @@ $result = $conn->query($query);
 
     <br>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-right">
-                <a href="addnewlesson.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Lesson</a>
-            </div>
-        </div>
-        <br>
-        <div class="table-responsive">
-            <table class="table table-bordered table-fixed" style="width: 90%;">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Lesson Name</th>
-                        <th>Course Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Check if there are any lessons available
-                    if ($result && $result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            $lessonId = $row['id'];
-                            $lessonName = $row['name'];
-                            $courseName = $row['course_name'];
-                            $lessonDescription = htmlspecialchars_decode($row['desc']);
-                            $lessonLink = $row['link'];
-                            ?>
-                            <tr>
-                                <td><?php echo $lessonId; ?></td>
-                                <td><?php echo $lessonName; ?></td>
-                                <td><?php echo $courseName; ?></td>
-                                <td>
-                                    
-                                        <a href="editlesson.php?id=<?php echo $lessonId; ?>" class="btn btn-primary">Edit</a>
-                                        <a href="?delete_lesson=<?php echo $lessonId; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this lesson?')">Delete</a>
-                                        <a href="previewlessondetails.php?id=<?php echo $lessonId; ?>" class="btn btn-info">Preview</a> <!-- Redirect to the preview page -->
-                                    
-                                </td>
-                            </tr>
-                            <?php
-                        }
-                    } else { 
-                        // Display a message if there are no available lessons
-                        echo '<tr><td colspan="4">Sorry, there are no available lessons right now.</td></tr>';
-                    }
-                    ?>
-                </tbody>
-            </table>
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <a href="addnewlesson.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Lesson</a>
         </div>
     </div>
-
+    <br>
+    <div class="table-responsive">
+        <table class="table table-bordered table-fixed" style="width: 90%;">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Lesson Name</th>
+                    <th>Course Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Check if there are any lessons available
+                if ($result && $result->num_rows > 0) {
+                    $counter = 1; // Initialize the counter
+                    while ($row = $result->fetch_assoc()) {
+                        $lessonId = $row['id'];
+                        $lessonName = $row['name'];
+                        $courseName = $row['course_name'];
+                        $lessonDescription = htmlspecialchars_decode($row['desc']);
+                        $lessonLink = $row['link'];
+                        ?>
+                        <tr>
+                            <td><?php echo $counter; ?></td>
+                            <td><?php echo $lessonName; ?></td>
+                            <td><?php echo $courseName; ?></td>
+                            <td>
+                                <a href="editlesson.php?id=<?php echo $lessonId; ?>" class="btn btn-primary">Edit</a>
+                                <a href="?delete_lesson=<?php echo $lessonId; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this lesson?')">Delete</a>
+                                <a href="previewlessondetails.php?id=<?php echo $lessonId; ?>" class="btn btn-info">Preview</a>
+                            </td>
+                        </tr>
+                        <?php
+                        $counter++; // Increment the counter
+                    }
+                } else {
+                    // Display a message if there are no available lessons
+                    echo '<tr><td colspan="4">Sorry, there are no available lessons right now.</td></tr>';
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
     <?php include('../includes/footer.php'); ?>
 
     <!-- Remove the modal and AJAX script -->

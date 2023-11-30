@@ -1,25 +1,23 @@
 <?php
-session_start();
+session_start(); // Ensure session is started
 
-// Include the database configuration file
 include 'includes/config.php';
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Your feedback submission logic here
+
+    if (!isset($_SESSION['user'])) {
+        // Redirect to the login page if the user is not logged in
+        header("Location: login.php");
+        exit;
+    }
+
     // Get the comment from the form
     $comment = $_POST["comment"];
     
-    // In a real-world scenario, you would have a way to identify the currently logged-in staff member.
-    // For this example, I'll assume you have a session variable 'staff_id' that stores the staff's ID.
-
-    if (isset($_SESSION['staff_id'])) {
-        $staff_id = $_SESSION['staff_id'];
-    } else {
-        // If the 'staff_id' session variable is not set, handle it appropriately, e.g., redirect to the login page.
-        // You should replace this with your actual logic.
-        header("Location: login.php");
-        exit();
-    }
+    // Assuming 'id' is the staff ID field in your user data
+    $staff_id = $_SESSION['user']['id'];
 
     // Perform any necessary validation on the comment (e.g., length checks, sanitization)
 
@@ -33,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Execute the statement
     if ($stmt->execute()) {
         // Comment added successfully
+        // Redirect back to feedback.php
         header("Location: feedback.php");
         exit();
     } else {

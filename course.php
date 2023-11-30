@@ -1,7 +1,6 @@
 <?php
 // Include the necessary files (config and start session)
 include 'includes/config.php';
-session_start(); // Start the session
 
 // Function to get the image file type
 function getImageType($url)

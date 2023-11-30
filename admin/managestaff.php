@@ -19,8 +19,27 @@ if (isset($_GET['delete_staff'])) {
     }
 }
 
+// Handle update user type request
+if (isset($_POST['update_user_type'])) {
+    $staffIdToUpdate = $_POST['staff_id'];
+    $userType = $_POST['user_type'];
+
+    // Perform the database update operation here
+    $updateQuery = "UPDATE staff SET user_type = ? WHERE id = ?";
+    $stmt = $conn->prepare($updateQuery);
+    $stmt->bind_param("ii", $userType, $staffIdToUpdate);
+
+    if ($stmt->execute()) {
+        // User type updated successfully
+        header("Location: managestaff.php"); // Redirect to refresh the page
+        exit;
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+}
+
 // Query to fetch all staff members from the database, including the "status" column
-$query = "SELECT staff.id, staff.code, staff.name, staff.email, staff.position, staff.dp, department.name AS department_name, staff.status
+$query = "SELECT staff.id, staff.code, staff.name, staff.email, staff.position, staff.dp, department.name AS department_name, staff.status, staff.user_type
           FROM staff
           LEFT JOIN department ON staff.department_id = department.id";
 $result = $conn->query($query);
@@ -55,85 +74,102 @@ $result = $conn->query($query);
     </div>
     <br>
     <div class="col-md-7 text-right button-container">
-    <a href="addnewstaff.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Staff</a>
-    <a href="managedepartment.php" class="btn btn-success"><i class="fa fa-plus"></i> Manage Department</a>
-</div>
+        <a href="addnewstaff.php" class="btn btn-success"><i class="fa fa-plus"></i> Add New Staff</a>
+        <a href="managedepartment.php" class="btn btn-success"><i class="fa fa-plus"></i> Manage Department</a>
+    </div>
 
     <div class="container">
         <div class="row">
             <div class="col-md-5">
                 <h2>Staff List</h2>
                 <br>
-               
-
-        </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Position</th>
-                    <th>Department</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Check if there are any staff members available
-                if ($result && $result->num_rows > 0) {
-                    // Loop through the staff members and display them in a table
-                    while ($row = $result->fetch_assoc()) {
-                        $staffId = $row['id'];
-                        $staffCode = $row['code'];
-                        $staffName = $row['name'];
-                        $staffEmail = $row['email'];
-                        $staffPosition = $row['position'];
-                        $departmentName = $row['department_name'];
-                        $staffStatus = $row['status'];
-                        ?>
-                        <tr>
-                            <td><?php echo $staffId; ?></td>
-                            <td><?php echo $staffCode; ?></td>
-                            <td><?php echo $staffName; ?></td>
-                            <td><?php echo $staffEmail; ?></td>
-                            <td><?php echo $staffPosition; ?></td>
-                            <td><?php echo $departmentName; ?></td>
-                            <td>
-    <?php
-    if ($staffStatus === '1') {
-        echo 'Active';
-    } elseif ($staffStatus === '0') {
-        echo 'Inactive';
-    } else {
-        echo 'Not Set';
-    }
-    ?>
-</td>
-
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="editstaff.php?id=<?php echo $staffId; ?>" class="btn btn-primary mr-2">Edit</a>
-                                    <a href="?delete_staff=<?php echo $staffId; ?>"
-                                        class="btn btn-danger mr-2"
-                                        onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</a>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Position</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Check if there are any staff members available
+                    if ($result && $result->num_rows > 0) {
+                        $counter = 1; // Initialize the counter
+                        // Loop through the staff members and display them in a table
+                        while ($row = $result->fetch_assoc()) {
+                            $staffId = $row['id'];
+                            $staffCode = $row['code'];
+                            $staffName = $row['name'];
+                            $staffEmail = $row['email'];
+                            $staffPosition = $row['position'];
+                            $departmentName = $row['department_name'];
+                            $staffStatus = $row['status'];
+                            $staffType = $row['user_type'];
+                            ?>
+                            <tr>
+                                <td><?php echo $counter; ?></td>
+                                <td><?php echo $staffCode; ?></td>
+                                <td><?php echo $staffName; ?></td>
+                                <td><?php echo $staffEmail; ?></td>
+                                <td><?php echo $staffPosition; ?></td>
+                                <td><?php echo $departmentName; ?></td>
+                                <td>
+                                    <?php
+                                    if ($staffStatus === '1') {
+                                        echo 'Active';
+                                    } elseif ($staffStatus === '0') {
+                                        echo 'Inactive';
+                                    } else {
+                                        echo 'Not Set';
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <form action="" method="post">
+                                        <input type="hidden" name="staff_id" value="<?php echo $staffId; ?>">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="user_type" id="userType1" value="1" <?php echo ($staffType === '1') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="userType1">Normal Staff</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="user_type" id="userType2" value="2" <?php echo ($staffType === '2') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="userType2">Instructor</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="user_type" id="userType3" value="3" <?php echo ($staffType === '3') ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="userType3">Admin</label>
+                                        </div>
+                                        <button type="submit" name="update_user_type" class="btn btn-primary btn-sm">Update</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="editstaff.php?id=<?php echo $staffId; ?>" class="btn btn-primary mr-2">Edit</a>
+                                        <a href="?delete_staff=<?php echo $staffId; ?>"
+                                            class="btn btn-danger mr-2"
+                                            onclick="return confirm('Are you sure you want to delete this staff member?')">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php
+                            $counter++; // Increment the counter
+                        }
+                    } else {
+                        // Display a message if there are no available staff members
+                        echo '<tr><td colspan="8">Sorry, there are no available staff members right now.</td></tr>';
                     }
-                } else {
-            // Display a message if there are no available staff members
-            echo '<tr><td colspan="7">Sorry, there are no available staff members right now.</td></tr>';
-        }
-        ?>
-    </tbody>
-</table>
-
-
-    </div>
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <?php include('../includes/footer.php'); ?>
 

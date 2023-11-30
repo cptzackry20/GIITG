@@ -78,8 +78,9 @@ nav button.navbar-toggler:active {
 .web-header h1 {
     font-family: 'Roboto', sans-serif;
     color: White;
-    font-size: 130px;
+    font-size: 80px;
     font-weight: bold;
+    width: 1100px;
 }
 
 .main-container {
@@ -114,14 +115,14 @@ nav button.navbar-toggler:active {
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.459);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: 100%;
+    justify-content: flex-start; /* Start from the beginning */
+    align-items: flex-start; /* Start from the beginning */
+    flex-wrap: wrap; /* Allow courses to wrap */
     padding: 0 10px;
     border-radius: 10px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 600px; /* Set a maximum height for the container */
 }
-
 .row button:hover .course {
     box-shadow: 5px 10px 8px #888888;
     transform: scale(1.1);
@@ -262,24 +263,70 @@ nav button.navbar-toggler:active {
     }
 }
 
-.container-lesson {
+.course-container {
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.459);
     display: flex;
-    flex-wrap: wrap;
-    padding: 2%;
-    
+    justify-content: flex-start; /* Start from the beginning */
+    align-items: flex-start; /* Start from the beginning */
+    flex-wrap: wrap; /* Allow courses to wrap */
+    padding: 0 10px;
+    border-radius: 10px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 600px; /* Set a maximum height for the container */
 }
-
-/* Additional styles for the PDF container */
-.pdf-container {
+.course-card {
+    width: calc(33.33% - 20px);
+    height: 350px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
     position: relative;
-    padding-bottom: 100%; /* Adjust the aspect ratio as needed */
-    height: 0;
 }
 
-.pdf-embed {
+.course-card img {
+    width: 175px;
+    height: 175px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.course-card h2 {
+    font-size: 18px;
+    padding: 10px;
+    margin: 0;
+}
+
+.course-card p {
+    font-size: 14px;
+    padding: 0 10px 10px;
+    margin: 0;
+}
+
+.course-card:hover {
+    transform: scale(1.03);
+}
+
+.start-button {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 10px;
+    right: 10px;
+    border-radius: 10px;
+    border: 1px solid #2180ec;
+    padding: 5px 10px;
+    text-decoration: none;
+    display: inline-block;
+    color: #2180ec;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.start-button:hover {
+    background-color: #2180ec;
+    color: #fff;
+    text-decoration: none;
 }

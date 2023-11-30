@@ -1,8 +1,7 @@
 <?php
 
 include 'includes/config.php';
-session_start(); // Start the session
-// Function to get the image file type
+
 function getImageType($url)
 {
     $imageInfo = getimagesize($url);
@@ -25,7 +24,7 @@ $result = $conn->query($query);
 <html lang="en">
 
 <head>
-<link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Feedback</title>
@@ -49,6 +48,21 @@ $result = $conn->query($query);
             width: 33.33%; /* Display three comments per page */
             white-space: normal;
         }
+
+        /* Add styles for the circular user image */
+        .user-image-container {
+            overflow: hidden;
+            border-radius: 50%;
+            width: 50px; /* Adjust the size as needed */
+            height: 50px; /* Adjust the size as needed */
+            margin-right: 10px; /* Add some spacing between the image and text */
+        }
+
+        .user-image {
+            width: 100%; /* Ensure the image takes up the container space */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 50%;
+        }
     </style>
 </head>
 
@@ -64,7 +78,7 @@ $result = $conn->query($query);
     </div>
 
     <section class="main-container">
-        <h1>View Feedback</h1>
+        <h1>Feedback</h1>
 
         <!-- Display existing comments in a horizontal arrangement -->
         <div class="comments-container">
@@ -78,7 +92,10 @@ $result = $conn->query($query);
             <div class="comment">
                 <div class="feedback">
                     <div class="comment">
-                        <img src="<?php echo $staffDP; ?>" alt="Staff DP">
+                        <!-- Add a container for the circular image -->
+                        <div class="user-image-container">
+                            <img class="user-image" src="<?php echo $staffDP; ?>" alt="Staff DP">
+                        </div>
                         <p><strong><?php echo $staffName; ?>:</strong> <?php echo $feedbackComment; ?></p>
                     </div>
                 </div>
@@ -94,7 +111,7 @@ $result = $conn->query($query);
         <!-- Comment submission form -->
         <div class="row">
             <div class="col-lg-12">
-                <form action="submit_feedback.php" method="post">
+                <form id="feedbackForm" action="submit_feedback.php" method="post">
                     <h2>Submit Your Comment</h2>
                     <div class="form-group">
                         <label for="comment">Comment:</label>
@@ -123,6 +140,11 @@ $result = $conn->query($query);
 
             // Set an interval to switch slides every 5 seconds
             setInterval(showNextSlide, 5000);
+
+            // Refresh the page after form submission
+            $("#feedbackForm").submit(function() {
+                location.reload(true);
+            });
         });
     </script>
 

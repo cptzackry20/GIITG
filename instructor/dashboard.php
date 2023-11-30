@@ -3,6 +3,25 @@ session_start();
 error_reporting(0);
 include('../includes/config.php');
 
+// Check if user ID is set in the session
+if (isset($_SESSION['user']['id'])) {
+    $userId = $_SESSION['user']['id'];
+
+    // Fetch staff name from the database based on user ID
+    $sql = "SELECT name FROM staff WHERE id = $userId";
+    $result = $conn->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        $staffName = $result->fetch_assoc()['name'];
+    } else {
+        // Handle the case when staff name is not found
+        $staffName = "Staff"; // Provide a default value or handle it based on your logic
+    }
+} else {
+    // Handle the case when user ID is not set in the session
+    $staffName = "Staff"; // Provide a default value or handle it based on your logic
+}
+
 // Initialize variables to store the counts
 $totalCourses = 0;
 $totalStaff = 0;
@@ -67,7 +86,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Admin</title>
+    <title>Instructor</title>
     <meta name="author" content="name">
     <meta name="description" content="description here">
     <meta name="keywords" content="keywords,here">
@@ -87,11 +106,11 @@ try {
 <section>
 <div id="main" class="main-content flex-1 bg-gray-100 mt-12 md:mt-2 pb-24 md:pb-5">
     <div class="bg-gray-800 pt-3">
-        <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white flex items-center">
-            <img src="https://i.ibb.co/BsCvKCj/giitglogo-01.png" alt="" style="max-width: 100px; height: auto;">
-            <h1 class="font-bold pl-2">Welcome Instructor</h1>
-        </div>
-    </div>
+    <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white flex items-center">
+    <img src="https://i.ibb.co/BsCvKCj/giitglogo-01.png" alt="" style="max-width: 100px; height: auto;">
+    <h1 class="font-bold pl-2">Welcome Back!, <?php echo $staffName; ?></h1>
+</div>
+
         
 
                 <div class="flex flex-wrap">
