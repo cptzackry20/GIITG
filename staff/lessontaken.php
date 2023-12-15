@@ -2,9 +2,6 @@
 // Include necessary files and database connection here
 include '../includes/config.php'; // Adjust the path as needed
 
-// Start the session at the beginning
-session_start();
-
 // Fetch staff details from the database based on the user's session information
 $staffID = $_SESSION['user']['id']; // Assuming you store the user's ID in the session
 
@@ -63,33 +60,20 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel="stylesheet" href="lessontaken.css"> <!-- Include your new CSS file -->
-    <style>
-        /* Add your additional styles here */
-        /* Style for the video container */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-        }
+    <link rel="stylesheet" href="lessontaken.css">
+    <script data-main="js/require-config" src="js/require.js"></script>
+    <script data-main="js/lesson-main" src="js/require.js"></script>
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lesson Details</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="wrapper">
         <?php include 'staffsidebar.php'; ?>
@@ -109,12 +93,28 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
                 <!-- Add your video here -->
                 <h2>Lesson Video</h2>
                 <div class="video-container">
-                    <iframe src="<?= $lessonLink ?>" frameborder="0" allowfullscreen></iframe>
+                    <!-- Use the video tag with custom controls -->
+                    <video id="lessonVideo">
+                        <source src="<?= $lessonLink ?>" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
 
+                <!-- Video controls -->
+                <div class="video-controls">
+                    <button id="playPauseBtn" class="play-pause-btn"><i class="fas fa-play"></i></button>
+                </div><br>
+                <div class="progress-text">Your View Map: <span id="progressPercentage">0%</span></div>
+               <br> </div>
+                <div class="video-progress" id="videoProgress">
+                    <div class="progress-bar"></div>
+                    
+                   
+               
+<br>
                 <!-- Add your lesson details here -->
                 <h2><?= $lessonName ?></h2>
-                <?php echo htmlspecialchars_decode ($lessonDescription); ?></p>
+                <?php echo htmlspecialchars_decode($lessonDescription); ?></p>
 
                 <!-- Add your content specific to the lesson -->
                 <h2>Lesson Content</h2>
@@ -131,14 +131,45 @@ if ($lessonResult && $lessonResult->num_rows > 0) {
 
                 <!-- Add a link to go back to the course page -->
                 <a href="coursetaken.php?course_id=<?= $lesson['course_id'] ?>">Back to Course</a>
+
             </div>
         </div>
     </div>
+
     <script>
-        var hamburger = document.querySelector(".hamburger");
-        hamburger.addEventListener("click", function(){
-            document.querySelector("body").classList.toggle("active");
-        })
+        document.addEventListener('DOMContentLoaded', function () {
+            var video = document.getElementById('lessonVideo');
+            var progressBar = document.getElementById('videoProgress');
+            var progress = document.querySelector('.progress-bar');
+            var progressPercentage = document.getElementById('progressPercentage');
+            var playPauseBtn = document.getElementById('playPauseBtn');
+
+            playPauseBtn.addEventListener('click', function () {
+                if (video.paused || video.ended) {
+                    video.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    video.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+
+            video.addEventListener('timeupdate', function () {
+                var value = (video.currentTime / video.duration) * 100;
+                progress.style.width = value + '%';
+                progressPercentage.textContent = value.toFixed(2) + '%';
+            });
+
+            progressBar.addEventListener('click', function (e) {
+                e.preventDefault();
+            });
+
+            video.addEventListener('seeking', function () {
+                // Disable seeking by resetting the video to the current time
+                video.currentTime = video.currentTime;
+            });
+        });
     </script>
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/config.php'; // Include the configuration file
-session_start();
+
 
 $staffID = $_SESSION['user']['id'];
 

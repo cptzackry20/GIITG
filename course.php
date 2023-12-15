@@ -1,53 +1,45 @@
 <?php
-// Include the necessary files (config and start session)
+
 include 'includes/config.php';
 
-// Function to get the image file type
-function getImageType($url)
-{
-    $imageInfo = getimagesize($url);
-    if ($imageInfo !== false) {
-        $mimeType = $imageInfo['mime'];
-        if ($mimeType === 'image/jpeg' || $mimeType === 'image/jpg' || $mimeType === 'image/png') {
-            return $mimeType;
-        }
-    }
-    return null;
+// Check if the user's department ID is set in the session
+if (isset($_SESSION['user']['department_id'])) {
+    // Assign the department ID to the staff session
+    $_SESSION['staff']['department_id'] = $_SESSION['user']['department_id'];
+} else {
+    // Redirect or handle error if department ID is not found
+    echo "Department ID not found in session.";
+    exit();
 }
 
-// Check if the user is logged in as staff
-if (isset($_SESSION['staff_id'])) {
-    $staffId = $_SESSION['staff_id'];
+// Fetch courses based on the staff's department
+if (isset($_SESSION['staff']['department_id'])) {
+    $departmentId = $_SESSION['staff']['department_id'];
 
-    // Fetch the staff's department from the staff table
-    $departmentQuery = "SELECT department_id FROM staff WHERE id = $staffId";
-    $departmentResult = $conn->query($departmentQuery);
+    // Query to fetch courses based on the staff's department
+    $coursesQuery = "SELECT c.* FROM course c 
+                    JOIN department_courses dc ON c.id = dc.course_id 
+                    WHERE dc.department_id = ?";
+    
+    $stmt = $conn->prepare($coursesQuery);
+    $stmt->bind_param("i", $departmentId);
+    $stmt->execute();
 
-    if ($departmentResult && $departmentResult->num_rows > 0) {
-        $departmentRow = $departmentResult->fetch_assoc();
-        $staffDepartmentId = $departmentRow['department_id'];
-
-        // Query to fetch courses based on the staff's department
-        $coursesQuery = "SELECT c.* FROM course c
-                        INNER JOIN department_courses dc ON c.id = dc.course_id
-                        WHERE dc.department_id = $staffDepartmentId";
-
-        $coursesResult = $conn->query($coursesQuery);
-    }
+    $coursesResult = $stmt->get_result();
 } else {
-    // If the user is not logged in as staff, show all courses
-    $coursesQuery = "SELECT * FROM course";
-    $coursesResult = $conn->query($coursesQuery);
+    // Redirect or handle error if department ID is not found
+    echo "Department ID not found in session.";
+    exit();
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <title>Courses</title>
+    <link rel="shortcut icon" href="https://i.ibb.co/swfD2Yt/giitglogo-01-01.png">
     <link rel="stylesheet" href="style/course.css">
     <link rel="stylesheet" href="style/Bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="style/Bootstrap/js/bootstrap.bundle.min.js">
@@ -100,8 +92,8 @@ if (isset($_SESSION['staff_id'])) {
             </div>
 
             <!-- Modal for course -->
-            <div class="modal fade" id="Modal<?php echo $courseId; ?>" tabindex="-1"
-                aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="Modal<?php echo $courseId; ?>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -163,5 +155,4 @@ if (isset($_SESSION['staff_id'])) {
     <script src="https://kit.fontawesome.com/9fb210ee5d.js" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
-
 </html>

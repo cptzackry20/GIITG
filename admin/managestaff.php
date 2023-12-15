@@ -84,6 +84,7 @@ $result = $conn->query($query);
                 <h2>Staff List</h2>
                 <br>
             </div>
+            
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -182,6 +183,46 @@ $result = $conn->query($query);
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
+    
+
+            <script>
+    function searchStaff() {
+        // Get the search term from the input field
+        var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+        // Get all rows in the table
+        var rows = document.querySelectorAll('tbody tr');
+
+        // Loop through the rows
+        for (var i = 0; i < rows.length; i++) {
+            // Get the name column value for each row
+            var nameColumn = rows[i].getElementsByTagName('td')[2]; // Assuming name is in the third column (index 2)
+
+            if (nameColumn) {
+                // Convert the name to lowercase for case-insensitive comparison
+                var name = nameColumn.innerText.toLowerCase();
+
+                // Check if the name contains the search term
+                if (name.includes(searchTerm)) {
+                    // Display the row if it matches the search term
+                    rows[i].style.display = '';
+                } else {
+                    // Hide the row if it does not match the search term
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Scroll to the first visible row
+        var firstVisibleRow = document.querySelector('tbody tr[style=""]');
+        if (firstVisibleRow) {
+            firstVisibleRow.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+</script>
     <script src="https://kit.fontawesome.com/9fb210ee5d.js" crossorigin="anonymous"></script>
     <script src="../js/course.js"></script>
 </body>

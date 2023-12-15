@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Enrollment successful, show a message
                 echo '<script>';
                 echo 'alert("Enrollment successful!");';
-                echo 'window.location.href = "staff/staffprofile.php";'; // Redirect to the relevant page
+                echo 'window.location.href = "staff/detailsstaff.php";'; // Redirect to the relevant page
                 echo '</script>';
             } else {
                 // Enrollment failed, show a message

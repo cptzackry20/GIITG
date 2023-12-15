@@ -2,8 +2,6 @@
 // Include necessary files and database connection here
 include '../includes/config.php'; // Adjust the path as needed
 
-// Start the session at the beginning
-session_start();
 $staffID = $_SESSION['user']['id']; // Assuming you store the user's ID in the session
 
 // Check if the staff is logged in and has access to this course

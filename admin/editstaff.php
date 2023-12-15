@@ -1,7 +1,6 @@
 <?php
 // Include the database configuration file
 include '../includes/config.php';
-session_start();
 
 // Initialize variables
 $staffId = $staffCode = $staffName = $staffEmail = $staffPassword = $staffPosition = $staffDepartment = $staffStatus = "";
@@ -179,10 +178,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="text-danger"><?php echo $staffDepartmentErr; ?></span>
             </div>
             <div class="form-group">
-                <label for="staff_status">Staff Status</label>
-                <input type="text" class="form-control" id="staff_status" name="staff_status" value="<?php echo $staffStatus; ?>" required>
-                <span class="text-danger"><?php echo $staffStatusErr; ?></span>
-            </div>
+    <label for="staff_status">Staff Status</label>
+    <select class="form-control" id="staff_status" name="staff_status" required>
+        <option value="1" <?php echo ($staffStatus == 1) ? 'selected' : ''; ?>>Active</option>
+        <option value="0" <?php echo ($staffStatus == 0) ? 'selected' : ''; ?>>Inactive</option>
+    </select>
+    <span class="text-danger"><?php echo $staffStatusErr; ?></span>
+</div>
+
             <button type="submit" class="btn btn-primary">Update Staff</button>
         </form>
         <br>

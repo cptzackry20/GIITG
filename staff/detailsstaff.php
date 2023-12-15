@@ -1,4 +1,5 @@
 <?php
+
 // Include the configuration file and start the session (if not already included/started)
 require_once '../includes/config.php';
 
@@ -24,7 +25,7 @@ function getUserTypeString($userType) {
 }
 $staffID = $_SESSION['user']['id'];
 
-$query = "SELECT id, code, name, email, password, position, dp, user_type FROM staff WHERE id = ?";
+$query = "SELECT id, code, name, email, password, position, dp, user_type, department_id FROM staff WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $staffID);
 $stmt->execute();
@@ -37,8 +38,21 @@ if ($result && $result->num_rows > 0) {
     $staffImage = $row['dp'];
     $staffPosition = $row['position'];
     $staffCode = $row['code'];
-    $userType = $row['user_type']; // Get the user type from the result set
+    $userType = $row['user_type'];
+    $departmentId = $row['department_id'];
 
+    $departmentQuery = "SELECT name FROM department WHERE id = ?";
+    $departmentStmt = $conn->prepare($departmentQuery);
+    $departmentStmt->bind_param("i", $departmentId);
+    $departmentStmt->execute();
+    $departmentResult = $departmentStmt->get_result();
+
+    $departmentName = "Unknown Department"; // Default value if the department is not found
+
+    if ($departmentResult && $departmentResult->num_rows > 0) {
+        $departmentRow = $departmentResult->fetch_assoc();
+        $departmentName = $departmentRow['name'];
+    }
     // Determine the user type and set variables accordingly
     $userTypeText = '';
     $dashboardLink = '';
@@ -127,6 +141,7 @@ if ($result && $result->num_rows > 0) {
                 <img src="<?php echo $staffImage; ?>" alt="Profile Picture" style="border-radius: 50%;">
                 <p>Full Name: <?php echo $staffName; ?></p>
                 <p>Email: <?php echo $staffEmail; ?></p>
+                <p>Department: <?php echo $departmentName; ?></p>
                 <p>Position: <?php echo $staffPosition; ?></p>
                 <p>Code: <?php echo $staffCode; ?></p>
 
@@ -142,6 +157,7 @@ if ($result && $result->num_rows > 0) {
                     </a>
                 </div>
             </div>
+            <br>
         </div>
     </div>
 </div>

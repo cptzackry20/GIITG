@@ -1,4 +1,6 @@
 <?php
+
+
 // Check if the user is logged in
 if (isset($_SESSION['user'])) {
     // Get the user type and name
@@ -9,8 +11,23 @@ if (isset($_SESSION['user'])) {
     // Redirect to login if not logged in
     header("Location: login.php");
     exit;
+    
 }
+// Function to get the image file type
+function getImageType($url)
+{
+    $imageInfo = getimagesize($url);
+    if ($imageInfo !== false) {
+        $mimeType = $imageInfo['mime'];
+        if ($mimeType === 'image/jpeg' || $mimeType === 'image/jpg' || $mimeType === 'image/png') {
+            return $mimeType;
+        }
+    }
+    return null;
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,9 +66,10 @@ if (isset($_SESSION['user'])) {
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item <?php if ($_SERVER['SCRIPT_NAME'] === '/index.php') echo 'active'; ?>">
-                <a class="nav-link" href="index.php">Home</a>
-            </li>
+        <li class="nav-item <?php if (strpos($_SERVER['SCRIPT_NAME'], 'index.php') !== false) echo 'active'; ?>">
+    <a class="nav-link" href="index.php">Home</a>
+</li>
+
             
             <?php
             if ($loggedIn) {

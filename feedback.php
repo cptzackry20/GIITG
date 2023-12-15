@@ -2,18 +2,6 @@
 
 include 'includes/config.php';
 
-function getImageType($url)
-{
-    $imageInfo = getimagesize($url);
-    if ($imageInfo !== false) {
-        $mimeType = $imageInfo['mime'];
-        if ($mimeType === 'image/jpeg' || $mimeType === 'image/jpg' || $mimeType === 'image/png') {
-            return $mimeType;
-        }
-    }
-    return null;
-}
-
 // Query to fetch feedback along with staff information from the database
 $query = "SELECT feedback.*, staff.name AS staff_name, staff.dp AS staff_dp FROM feedback
           INNER JOIN staff ON feedback.staff_id = staff.id";
